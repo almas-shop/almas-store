@@ -193,7 +193,8 @@ img{max-width:100%}
 
 <script>
 // ===== اطلاعات مغازه: تولیدی و پخش پوشاک زنانه =====
-var S={name:'الماس',shop:'تولیدی الماس مرادی',address:'بازار بزرگ تهران بازار مسگرها کوچه خسروی پاساژ نیک پ1',phone:' Alireza: 09331805391  Shop: 02155617531',hours:'9:00 الی 17:00'};
+// شماره‌ها را با | از هم جدا کن؛ هر کدام در یک خط جدا نمایش داده می‌شود
+var S={name:'الماس',shop:'تولیدی الماس مرادی',address:'بازار بزرگ تهران بازار مسگرها کوچه خسروی پاساژ نیک پ1',phone:'Alireza: 09331805391|Shop: 02155617531',hours:'9:00 الی 17:00'};
 // ===== اتصال به گوگل شیت: آدرس وب‌اپ را بین کوتیشن‌ها بگذار. اگر خالی باشد سایت با داده‌ی نمونه و بدون اتصال کار می‌کند =====
 var API_URL='https://script.google.com/macros/s/AKfycbzDaU9fI0kofUfbbS2XQ1XUlabiY32t3av2BaZtGIRZbaM3CzxS1msET6d9X1KroEtT/exec';
 // ===== محصولات (فقط برای حالت بدون اتصال): [دسته، نام، قیمت هر عدد (تومان)، تعداد در هر پک، موجودی انبار (تعداد پک)، رنگ زمینه] =====
@@ -328,7 +329,7 @@ function buildInv(num,d){
   rows+='<tr><td>'+fa(i+1)+'</td><td>'+esc(p.name)+'</td><td>'+fa(c.q)+'</td><td>'+fa(p.pack)+'</td><td>'+fa(p.unit)+'</td><td>'+fa(t)+'</td></tr>'});
  invHTML='<h2 style="margin:0;color:#2563eb">💎 '+esc(S.name)+' <small style="font-size:14px;color:#81858b">عمده‌فروشی پوشاک زنانه</small></h2>'+
  '<div class="meta"><span>فاکتور فروش شماره <bdi dir="ltr">'+num+'</bdi></span><span>تاریخ: '+d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})+'</span></div>'+
- '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+esc(S.phone)+' · ساعت کاری: '+esc(S.hours)+'</div>'+
+ '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'</div>'+
  '<div class="by">خریدار: <b>'+(esc(document.getElementById('cn').value)||'—')+'</b> · تلفن: '+(esc(document.getElementById('cp').value)||'—')+'</div>'+
  '<div class="tw"><table><thead><tr><th>ردیف</th><th>شرح کالا</th><th>تعداد پک</th><th>تعداد در پک</th><th>قیمت هر عدد</th><th>مبلغ</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
  '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(sum)+' تومان</span></div></div>';
@@ -366,9 +367,9 @@ function editCart(){
  }).catch(function(){alert('ارتباط با سرور برقرار نشد. دوباره تلاش کن.')});
 }
 function done(){committed=false;curInv='';cart=[];upd();draw();document.getElementById('inv').classList.remove('show')}
-// بخش اطلاعات مغازه
+// بخش اطلاعات مغازه (هر شماره در یک خط جدا و با لینک تماس مخصوص خودش)
 (function(){
- var tel=/[0-9۰-۹]/.test(S.phone)?'<a href="tel:'+S.phone.replace(/[^0-9+]/g,'')+'">'+esc(S.phone)+'</a>':esc(S.phone);
+ var tel=S.phone.split('|').map(function(t){t=t.trim();return /[0-9۰-۹]/.test(t)?'<a href="tel:'+t.replace(/[^0-9+]/g,'')+'">'+esc(t)+'</a>':esc(t)}).join('<br>');
  document.getElementById('info').innerHTML=
  '<div><b>📍 آدرس مغازه</b><span>'+esc(S.address)+'</span></div>'+
  '<div><b>🕘 ساعت کاری</b><span>'+esc(S.hours)+'</span></div>'+
