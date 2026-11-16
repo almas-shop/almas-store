@@ -179,7 +179,7 @@ async function save(){
 }
 // ===== سفارش‌ها =====
 var O=[],ofl='pending';
-var ST={'ثبت شد':['در انتظار تایید','s1','pending'],'تایید نهایی':['تایید نهایی شده','s2','done'],'لغو شد':['لغو شده','s3','cancel']};
+var ST={'ثبت شد':['در انتظار تایید','s1','pending'],'تایید نهایی':['تایید نهایی شده','s2','done'],'ارسال شد':['ارسال شده','s2','shipped'],'لغو شد':['لغو شده','s3','cancel']};
 function sk(o){return (ST[o.status]||['','s1','pending'])[2]}
 function nd(s){return String(s).replace(/[۰-۹]/g,function(c){return c.charCodeAt(0)-1776}).replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632})}
 function dt(iso){var d=new Date(iso);if(isNaN(d))return String(iso);return d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}
@@ -200,12 +200,12 @@ function ocard(o){
  return '<div class="od"><div class="h"><div><div class="nm">'+esc(o.name||'—')+'</div><div class="ph"><a href="tel:'+esc(tel)+'">'+esc(o.phone||'—')+'</a></div></div><span class="'+s[1]+'">'+s[0]+'</span></div>'+
  '<div class="meta">🕒 '+dt(o.date)+' · فاکتور <bdi dir="ltr">'+esc(o.inv)+'</bdi></div>'+
  '<ul>'+items+'</ul><div class="tt">مبلغ کل: '+fa(o.total)+' تومان</div>'+
- (s[2]==='pending'?'<div class="a2"><button class="b p" data-a="confirmOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">✓ تایید نهایی</button><button class="b d" data-a="cancelOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">✕ لغو و برگشت به انبار</button></div>':'')+'</div>';
+ (s[2]==='pending'?'<div class="a2"><button class="b p" data-a="confirmOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">✓ تایید نهایی</button><button class="b d" data-a="cancelOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">✕ لغو و برگشت به انبار</button></div>':s[2]==='done'?'<div class="a2"><button class="b p" data-a="shipOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">🚚 ارسال شد</button></div>':'')+'</div>';
 }
 function drawO(){
  var pend=O.filter(function(o){return sk(o)==='pending'}).length,pc=$('pc');
  pc.style.display=pend?'inline':'none';pc.textContent=fa(pend);
- var F=[['pending','در انتظار'],['done','تایید شده'],['cancel','لغو شده'],['all','همه']];
+ var F=[['pending','در انتظار'],['done','تایید شده'],['shipped','ارسال شده'],['cancel','لغو شده'],['all','همه']];
  $('fl').innerHTML=F.map(function(f){var n=f[0]==='all'?O.length:O.filter(function(o){return sk(o)===f[0]}).length;return '<button data-f="'+f[0]+'" class="'+(ofl===f[0]?'on':'')+'" onclick="setF(this.dataset.f)">'+f[1]+' ('+fa(n)+')</button>'}).join('');
  var q=nd($('oq').value.trim());
  var l=O.filter(function(o){return (ofl==='all'||sk(o)===ofl)&&(!q||nd(o.name+' '+o.phone+' '+o.inv).indexOf(q)>-1)});
@@ -213,13 +213,13 @@ function drawO(){
 }
 function oa(a,inv){
  var o=O.filter(function(x){return x.inv===inv})[0];if(!o)return;
- var t=a==='cancelOrder'?'سفارش «'+o.name+'» لغو شود و کالاهایش به موجودی انبار برگردد؟':'سفارش «'+o.name+'» تایید نهایی شود؟';
+ var t=a==='cancelOrder'?'سفارش «'+o.name+'» لغو شود و کالاهایش به موجودی انبار برگردد؟':a==='shipOrder'?'وضعیت سفارش «'+o.name+'» به «ارسال شد» تغییر کند؟':'سفارش «'+o.name+'» تایید نهایی شود؟';
  if(!confirm(t))return;
  msg('در حال انجام...','wt');
  api(a,{inv:inv}).then(function(r){
   if(r.orders)O=r.orders;
   if(r.products){P=r.products;draw()}
-  drawO();msg(a==='cancelOrder'?'✓ سفارش لغو شد و کالاها به موجودی انبار برگشتند.':'✓ سفارش تایید نهایی شد.','ok');
+  drawO();msg(a==='cancelOrder'?'✓ سفارش لغو شد و کالاها به موجودی انبار برگشتند.':a==='shipOrder'?'✓ سفارش به لیست ارسال‌شده‌ها منتقل شد.':'✓ سفارش تایید نهایی شد.','ok');
   window.scrollTo(0,0);
  }).catch(function(e){msg(e.message,'er');window.scrollTo(0,0);loadO()});
 }
