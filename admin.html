@@ -125,7 +125,17 @@ function rm(i){keep.splice(i,1);pv()}
 function shrink(f){
  return new Promise(function(ok,no){
   var i=new Image();
-  i.onload=function(){var s=Math.min(1,900/i.width),c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',0.85).split(',')[1])};
+  i.onload=function(){
+   // حداکثر ۷۲۰ پیکسل عرض و ۹۶۰ پیکسل ارتفاع (مناسب نمایش روی گوشی)
+   var s=Math.min(1,720/i.width,960/i.height),c=document.createElement('canvas'),x=c.getContext('2d');
+   c.width=Math.max(1,Math.round(i.width*s));c.height=Math.max(1,Math.round(i.height*s));
+   x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+   x.drawImage(i,0,0,c.width,c.height);
+   // کیفیت را تا جایی کم می‌کنیم که حجم عکس زیر حدود ۱۵۰ کیلوبایت برسد
+   var q=0.82,d=c.toDataURL('image/jpeg',q).split(',')[1];
+   while(d.length*0.75>150000&&q>0.5){q-=0.08;d=c.toDataURL('image/jpeg',q).split(',')[1]}
+   ok(d);
+  };
   i.onerror=function(){no(new Error('فایل عکس خوانده نشد'))};i.src=URL.createObjectURL(f);
  });
 }
