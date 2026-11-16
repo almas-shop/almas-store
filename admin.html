@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>مدیریت محصولات | الماس</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef4ff;color:#23254e;font-family:'Vazirmatn',Tahoma,sans-serif;line-height:1.6}
+.w{max-width:720px;margin:0 auto;padding:16px 14px 80px}
+h1{font-size:21px;margin:4px 0 12px}
+.c{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(30,64,175,.08)}
+label{display:block;font-size:14px;font-weight:600;margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;padding:9px 10px;border:1px solid #d5dbe8;border-radius:10px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid #2563eb}
+small{color:#81858b;font-weight:400}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.b{border:0;border-radius:10px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer;background:#e0e9ff;color:#1e3a8a}
+.b.p{background:#2563eb;color:#fff}.b.d{background:#fee2e2;color:#991b1b}.b:disabled{opacity:.5}
+.top{display:flex;gap:8px;margin-bottom:12px}.top input{flex:1}
+.it{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #eef0f5}
+.it:last-child{border:0}
+.th{width:56px;height:56px;border-radius:10px;background:#f1f2f4;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px}
+.th img{width:100%;height:100%;object-fit:cover}
+.in{flex:1;min-width:0}.in b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.in span{font-size:13px;color:#81858b}
+.sq{display:flex;align-items:center;gap:4px}.sq button{width:30px;height:30px;border:1px solid #d5dbe8;background:#fff;border-radius:8px;font-size:18px;cursor:pointer}
+.sq b{min-width:30px;text-align:center}.sq .z{color:#dc2626}
+.ac{display:flex;flex-direction:column;gap:4px}.ac .b{padding:4px 10px;font-size:13px}
+.pv{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.pv div{position:relative}.pv img{width:70px;height:70px;object-fit:cover;border-radius:10px;border:2px solid #d5dbe8;cursor:pointer}
+.pv div.m img{border-color:#2563eb}
+.pv i{position:absolute;top:-6px;inset-inline-start:-6px;width:22px;height:22px;background:#dc2626;color:#fff;border-radius:50%;text-align:center;font-style:normal;font-size:14px;line-height:22px;cursor:pointer}
+#msg{margin:10px 0;padding:11px;border-radius:10px;display:none}
+#msg.ok{display:block;background:#dcfce7;color:#166534}#msg.er{display:block;background:#fee2e2;color:#991b1b}#msg.wt{display:block;background:#e0e9ff;color:#1e3a8a}
+</style>
+</head>
+<body>
+<div class="w">
+<h1>💎 مدیریت محصولات</h1>
+<details class="c" id="set"><summary><b>تنظیمات</b> <small>(فقط بار اول)</small></summary>
+<label>رمز مدیریت</label><input id="pw" type="password" autocomplete="off">
+<label>توکن گیت‌هاب <small>(برای آپلود عکس)</small></label><input id="tk" type="password" autocomplete="off">
+</details>
+<div id="msg"></div>
+
+<div class="c" id="fm" style="display:none">
+<b id="ft"></b>
+<label>دسته</label><input id="cat" list="cl"><datalist id="cl"></datalist>
+<label>نام محصول</label><input id="nm">
+<div class="g">
+<div><label>قیمت هر عدد <small>(تومان)</small></label><input id="un" type="number" inputmode="numeric"></div>
+<div><label>تعداد در هر پک</label><input id="pk" type="number" inputmode="numeric"></div>
+<div><label>موجودی <small>(پک)</small></label><input id="st" type="number" inputmode="numeric"></div>
+<div><label>قیمت قبلی <small>(برای تخفیف)</small></label><input id="od" type="number" inputmode="numeric"></div>
+</div>
+<label>توضیحات</label><textarea id="ds" rows="3"></textarea>
+<label>عکس‌ها <small>(روی عکس بزن تا عکس اصلی شود، با ✕ حذفش کن)</small></label>
+<div class="pv" id="pv"></div>
+<input id="im" type="file" accept="image/*" multiple style="margin-top:8px">
+<div style="display:flex;gap:8px;margin-top:14px"><button class="b p" id="sv" onclick="save()" style="flex:1">ذخیره</button><button class="b" onclick="closeF()">انصراف</button></div>
+</div>
+
+<div class="top"><input id="q" placeholder="جستجوی محصول..." oninput="draw()"><button class="b p" onclick="openF(null)">+ محصول جدید</button></div>
+<div class="c" id="ls">در حال بارگذاری...</div>
+</div>
+
+<script>
+var API_URL='https://script.google.com/macros/s/AKfycbzDaU9fI0kofUfbbS2XQ1XUlabiY32t3av2BaZtGIRZbaM3CzxS1msET6d9X1KroEtT/exec';
+var REPO='almas-shop/almas-store';
+var COLORS=['#e8f0ff','#eaf7ee','#f3eaff','#fff1e6','#fdeaf4','#e9f5f7','#ffeaea','#fdf3e1'];
+var P=[],cur=null,keep=[];
+function $(i){return document.getElementById(i)}
+function fa(x){return Math.round(x).toLocaleString('fa-IR')}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function msg(t,c){var m=$('msg');m.className=c||'';m.textContent=t||''}
+try{$('pw').value=localStorage.getItem('apw')||'';$('tk').value=localStorage.getItem('atk')||'';if(!$('pw').value)$('set').open=true}catch(e){}
+function saveSet(){try{localStorage.setItem('apw',$('pw').value.trim());localStorage.setItem('atk',$('tk').value.trim())}catch(e){}}
+function api(action,data){
+ saveSet();
+ return fetch(API_URL,{method:'POST',body:JSON.stringify(Object.assign({action:action,password:$('pw').value.trim()},data))}).then(function(r){return r.json()}).then(function(r){if(!r.ok)throw new Error(r.error||'انجام نشد.');return r});
+}
+function imgs(p){return String(p.img||'').split(',').map(function(x){return x.trim()}).filter(function(x){return /^[\w.\-]+$/.test(x)})}
+function load(){
+ fetch(API_URL+'?action=products&t='+Date.now()).then(function(r){return r.json()}).then(function(r){
+  if(!r.ok)throw 0;P=r.products;
+  var cs=[];P.forEach(function(p){if(cs.indexOf(p.cat)<0)cs.push(p.cat)});
+  $('cl').innerHTML=cs.map(function(c){return '<option value="'+esc(c)+'">'}).join('');
+  draw();
+ }).catch(function(){$('ls').textContent='ارتباط با شیت برقرار نشد. صفحه را دوباره باز کن.'});
+}
+function draw(){
+ var q=$('q').value.trim(),l=P.filter(function(p){return !q||String(p.name).indexOf(q)>-1||String(p.cat).indexOf(q)>-1});
+ $('ls').innerHTML=l.length?l.map(function(p){
+  var im=imgs(p)[0];
+  return '<div class="it"><div class="th">'+(im?'<img src="images/'+im+'" alt="">':'🛍')+'</div>'+
+  '<div class="in"><b>'+esc(p.name)+'</b><span>'+esc(p.cat)+' · '+fa(p.unit)+' تومان · پک '+fa(p.pack)+' تایی</span></div>'+
+  '<div class="sq"><button onclick="qs('+p.sid+',-1)">−</button><b class="'+(p.stock<=0?'z':'')+'">'+fa(p.stock)+'</b><button onclick="qs('+p.sid+',1)">+</button></div>'+
+  '<div class="ac"><button class="b" onclick="openF('+p.sid+')">ویرایش</button><button class="b d" onclick="del('+p.sid+')">حذف</button></div></div>'}).join(''):'محصولی پیدا نشد.';
+}
+function byId(s){return P.filter(function(p){return String(p.sid)===String(s)})[0]}
+function qs(s,d){
+ var p=byId(s);if(p.stock+d<0)return;
+ api('updateProduct',{product:{sid:s,stockDelta:d}}).then(function(){p.stock+=d;draw()}).catch(function(e){msg(e.message,'er')});
+}
+function del(s){
+ var p=byId(s);if(!confirm('«'+p.name+'» برای همیشه حذف شود؟'))return;
+ api('deleteProduct',{sid:s}).then(function(){P=P.filter(function(x){return x!==p});draw();msg('محصول حذف شد.','ok')}).catch(function(e){msg(e.message,'er')});
+}
+function openF(s){
+ cur=s===null?null:byId(s);keep=cur?imgs(cur):[];
+ $('ft').textContent=cur?'ویرایش: '+cur.name:'محصول جدید';
+ $('cat').value=cur?cur.cat:'';$('nm').value=cur?cur.name:'';$('un').value=cur?cur.unit:'';$('pk').value=cur?cur.pack:'';
+ $('st').value=cur?cur.stock:'';$('od').value=cur&&cur.old?cur.old:'';$('ds').value=cur?(cur.desc||''):'';$('im').value='';
+ pv();$('fm').style.display='block';window.scrollTo(0,0);msg('');
+}
+function closeF(){$('fm').style.display='none'}
+function pv(){
+ $('pv').innerHTML=keep.map(function(n,i){return '<div class="'+(i===0?'m':'')+'"><img src="images/'+n+'" onclick="mk('+i+')"><i onclick="rm('+i+')">✕</i></div>'}).join('');
+}
+function mk(i){keep.unshift(keep.splice(i,1)[0]);pv()}
+function rm(i){keep.splice(i,1);pv()}
+function shrink(f){
+ return new Promise(function(ok,no){
+  var i=new Image();
+  i.onload=function(){var s=Math.min(1,900/i.width),c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',0.85).split(',')[1])};
+  i.onerror=function(){no(new Error('فایل عکس خوانده نشد'))};i.src=URL.createObjectURL(f);
+ });
+}
+function upload(name,b64,tk){
+ return fetch('https://api.github.com/repos/'+REPO+'/contents/images/'+name,{method:'PUT',headers:{'Authorization':'Bearer '+tk,'Accept':'application/vnd.github+json'},body:JSON.stringify({message:'Add image '+name,content:b64})})
+ .then(function(r){if(!r.ok)throw new Error('آپلود عکس انجام نشد. توکن گیت‌هاب را بررسی کن.')});
+}
+async function save(){
+ var cat=$('cat').value.trim(),nm=$('nm').value.trim(),un=+$('un').value,pk=+$('pk').value,st=$('st').value===''?NaN:+$('st').value,files=$('im').files,tk=$('tk').value.trim();
+ if(!$('pw').value.trim()){$('set').open=true;return msg('رمز مدیریت را بنویس.','er')}
+ if(!cat||!nm||!(un>0)||!(pk>0)||isNaN(st)||st<0)return msg('دسته، نام، قیمت، تعداد در پک و موجودی را کامل پر کن.','er');
+ if(files.length&&!tk){$('set').open=true;return msg('برای آپلود عکس، توکن گیت‌هاب لازم است.','er')}
+ $('sv').disabled=true;
+ try{
+  var all=keep.slice(),stamp=Date.now().toString(36);
+  for(var k=0;k<files.length;k++){msg('آپلود عکس '+(k+1)+' از '+files.length+'...','wt');var n='p'+stamp+'-'+(k+1)+'.jpg';await upload(n,await shrink(files[k]),tk);all.push(n)}
+  msg('در حال ثبت...','wt');
+  var p={cat:cat,name:nm,unit:un,pack:pk,stock:st,old:+$('od').value||0,desc:$('ds').value.trim(),img:all.join(',')};
+  if(cur)p.sid=cur.sid;else p.bg=COLORS[Math.floor(Math.random()*COLORS.length)];
+  await api(cur?'updateProduct':'addProduct',{product:p});
+  msg('✓ ذخیره شد.'+(files.length?' عکس‌های جدید بعد از ۱ تا ۲ دقیقه در سایت دیده می‌شن.':''),'ok');
+  closeF();load();
+ }catch(e){msg(e.message||'خطا در ارتباط.','er')}
+ $('sv').disabled=false;
+}
+load();
+</script>
+</body>
+</html>
