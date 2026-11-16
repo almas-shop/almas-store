@@ -138,6 +138,25 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
  .acts{display:none!important}
  #paper th{background:#f1f2f4!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+/* ===== اصلاح بزرگ‌نمایی صفحه‌ی محصول (آیفون) ===== */
+.pdg>*{min-width:0}
+.ths{max-width:100%}
+.mn img{object-fit:contain}
+@media(max-width:760px){.pdg{grid-template-columns:minmax(0,1fr)}}
+
+/* ===== عکس همیشه داخل کادر خودش می‌ماند، مستقل از ابعاد اصلی عکس (سافاری آیفون) ===== */
+.mn{position:relative}
+.mn img,.im img{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:none;max-height:none}
+.mn img{object-fit:contain}
+
+/* ===== جلوگیری قطعی از اسکرول افقی صفحه‌ی محصول، مهم نیست عکس چقدر بزرگ باشد ===== */
+.pd{overflow-x:hidden}
+.pdi{width:100%;overflow-x:hidden}
+.pdg{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.pdg>*,.mn,.inf,.ths{min-width:0;max-width:100%}
+img{max-width:100%}
+@media(max-width:760px){.pdg{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
