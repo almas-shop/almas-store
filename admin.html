@@ -35,6 +35,23 @@ small{color:#81858b;font-weight:400}
 .pv i{position:absolute;top:-6px;inset-inline-start:-6px;width:22px;height:22px;background:#dc2626;color:#fff;border-radius:50%;text-align:center;font-style:normal;font-size:14px;line-height:22px;cursor:pointer}
 #msg{margin:10px 0;padding:11px;border-radius:10px;display:none}
 #msg.ok{display:block;background:#dcfce7;color:#166534}#msg.er{display:block;background:#fee2e2;color:#991b1b}#msg.wt{display:block;background:#e0e9ff;color:#1e3a8a}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabs button{flex:1;padding:11px;border:0;border-radius:12px;background:#fff;font:inherit;font-weight:600;cursor:pointer;color:#1e3a8a;box-shadow:0 2px 10px rgba(30,64,175,.08)}
+.tabs button.on{background:#2563eb;color:#fff}
+.tabs i{font-style:normal;background:#f59e0b;color:#111;border-radius:10px;font-size:12px;padding:0 7px;margin-inline-start:6px}
+.fl{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.fl button{border:1px solid #d5dbe8;background:#fff;border-radius:20px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
+.fl button.on{background:#e0e9ff;border-color:#2563eb;color:#1e3a8a;font-weight:600}
+.od{border:1px solid #e3e8f2;border-radius:14px;padding:12px;margin-bottom:10px;background:#fff;box-shadow:0 2px 10px rgba(30,64,175,.06)}
+.od .h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.od .nm{font-weight:800;font-size:16px}
+.od .ph{direction:ltr;text-align:right}.od .ph a{color:#2563eb;text-decoration:none}
+.od .meta{font-size:13px;color:#81858b;margin-top:2px}
+.od ul{margin:8px 0;padding:0 18px;font-size:14px}
+.od .tt{font-weight:800;color:#16a34a}
+.s1,.s2,.s3{padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.s1{background:#fef3c7;color:#92400e}.s2{background:#dcfce7;color:#166534}.s3{background:#fee2e2;color:#991b1b}
+.od .a2{display:flex;gap:8px;margin-top:10px}.od .a2 .b{flex:1}
 </style>
 </head>
 <body>
@@ -45,6 +62,8 @@ small{color:#81858b;font-weight:400}
 <label>توکن گیت‌هاب <small>(برای آپلود عکس)</small></label><input id="tk" type="password" autocomplete="off">
 </details>
 <div id="msg"></div>
+<div class="tabs"><button id="t1" class="on" onclick="tab(1)">📦 محصولات</button><button id="t2" onclick="tab(2)">🧾 سفارش‌ها<i id="pc" style="display:none"></i></button></div>
+<div id="pg1">
 
 <div class="c" id="fm" style="display:none">
 <b id="ft"></b>
@@ -65,6 +84,13 @@ small{color:#81858b;font-weight:400}
 
 <div class="top"><input id="q" placeholder="جستجوی محصول..." oninput="draw()"><button class="b p" onclick="openF(null)">+ محصول جدید</button></div>
 <div class="c" id="ls">در حال بارگذاری...</div>
+</div>
+<div id="pg2" style="display:none">
+<div class="top"><input id="oq" placeholder="جستجو: نام، شماره تماس یا شماره فاکتور" oninput="drawO()"><button class="b p" onclick="loadO()">↻ بروزرسانی</button></div>
+<div class="fl" id="fl"></div>
+<div id="ol">در حال بارگذاری...</div>
+</div>
+
 </div>
 
 <script>
@@ -125,17 +151,7 @@ function rm(i){keep.splice(i,1);pv()}
 function shrink(f){
  return new Promise(function(ok,no){
   var i=new Image();
-  i.onload=function(){
-   // حداکثر ۷۲۰ پیکسل عرض و ۹۶۰ پیکسل ارتفاع (مناسب نمایش روی گوشی)
-   var s=Math.min(1,720/i.width,960/i.height),c=document.createElement('canvas'),x=c.getContext('2d');
-   c.width=Math.max(1,Math.round(i.width*s));c.height=Math.max(1,Math.round(i.height*s));
-   x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
-   x.drawImage(i,0,0,c.width,c.height);
-   // کیفیت را تا جایی کم می‌کنیم که حجم عکس زیر حدود ۱۵۰ کیلوبایت برسد
-   var q=0.82,d=c.toDataURL('image/jpeg',q).split(',')[1];
-   while(d.length*0.75>150000&&q>0.5){q-=0.08;d=c.toDataURL('image/jpeg',q).split(',')[1]}
-   ok(d);
-  };
+  i.onload=function(){var s=Math.min(1,900/i.width),c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',0.85).split(',')[1])};
   i.onerror=function(){no(new Error('فایل عکس خوانده نشد'))};i.src=URL.createObjectURL(f);
  });
 }
@@ -161,7 +177,54 @@ async function save(){
  }catch(e){msg(e.message||'خطا در ارتباط.','er')}
  $('sv').disabled=false;
 }
+// ===== سفارش‌ها =====
+var O=[],ofl='pending';
+var ST={'ثبت شد':['در انتظار تایید','s1','pending'],'تایید نهایی':['تایید نهایی شده','s2','done'],'لغو شد':['لغو شده','s3','cancel']};
+function sk(o){return (ST[o.status]||['','s1','pending'])[2]}
+function nd(s){return String(s).replace(/[۰-۹]/g,function(c){return c.charCodeAt(0)-1776}).replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632})}
+function dt(iso){var d=new Date(iso);if(isNaN(d))return String(iso);return d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}
+function tab(n){
+ $('pg1').style.display=n===1?'block':'none';$('pg2').style.display=n===2?'block':'none';
+ $('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';msg('');
+ if(n===2)loadO();
+}
+function setF(f){ofl=f;drawO()}
+function loadO(quiet){
+ if(!$('pw').value.trim()){if(!quiet){$('set').open=true;msg('رمز مدیریت را بنویس.','er')}return}
+ api('listOrders',{}).then(function(r){O=r.orders||[];drawO()}).catch(function(e){if(!quiet){$('ol').textContent='';msg(e.message,'er')}});
+}
+function ocard(o){
+ var s=ST[o.status]||[o.status,'s1','pending'];
+ var items=String(o.items).split('، ').map(function(t){return '<li>'+esc(t)+'</li>'}).join('');
+ var tel=nd(String(o.phone).replace(/[^0-9+۰-۹٠-٩]/g,''));
+ return '<div class="od"><div class="h"><div><div class="nm">'+esc(o.name||'—')+'</div><div class="ph"><a href="tel:'+esc(tel)+'">'+esc(o.phone||'—')+'</a></div></div><span class="'+s[1]+'">'+s[0]+'</span></div>'+
+ '<div class="meta">🕒 '+dt(o.date)+' · فاکتور <bdi dir="ltr">'+esc(o.inv)+'</bdi></div>'+
+ '<ul>'+items+'</ul><div class="tt">مبلغ کل: '+fa(o.total)+' تومان</div>'+
+ (s[2]==='pending'?'<div class="a2"><button class="b p" data-a="confirmOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">✓ تایید نهایی</button><button class="b d" data-a="cancelOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">✕ لغو و برگشت به انبار</button></div>':'')+'</div>';
+}
+function drawO(){
+ var pend=O.filter(function(o){return sk(o)==='pending'}).length,pc=$('pc');
+ pc.style.display=pend?'inline':'none';pc.textContent=fa(pend);
+ var F=[['pending','در انتظار'],['done','تایید شده'],['cancel','لغو شده'],['all','همه']];
+ $('fl').innerHTML=F.map(function(f){var n=f[0]==='all'?O.length:O.filter(function(o){return sk(o)===f[0]}).length;return '<button data-f="'+f[0]+'" class="'+(ofl===f[0]?'on':'')+'" onclick="setF(this.dataset.f)">'+f[1]+' ('+fa(n)+')</button>'}).join('');
+ var q=nd($('oq').value.trim());
+ var l=O.filter(function(o){return (ofl==='all'||sk(o)===ofl)&&(!q||nd(o.name+' '+o.phone+' '+o.inv).indexOf(q)>-1)});
+ $('ol').innerHTML=l.length?l.map(ocard).join(''):'<div class="c">سفارشی پیدا نشد.</div>';
+}
+function oa(a,inv){
+ var o=O.filter(function(x){return x.inv===inv})[0];if(!o)return;
+ var t=a==='cancelOrder'?'سفارش «'+o.name+'» لغو شود و کالاهایش به موجودی انبار برگردد؟':'سفارش «'+o.name+'» تایید نهایی شود؟';
+ if(!confirm(t))return;
+ msg('در حال انجام...','wt');
+ api(a,{inv:inv}).then(function(r){
+  if(r.orders)O=r.orders;
+  if(r.products){P=r.products;draw()}
+  drawO();msg(a==='cancelOrder'?'✓ سفارش لغو شد و کالاها به موجودی انبار برگشتند.':'✓ سفارش تایید نهایی شد.','ok');
+  window.scrollTo(0,0);
+ }).catch(function(e){msg(e.message,'er');window.scrollTo(0,0);loadO()});
+}
 load();
+if($('pw').value.trim())loadO(true);
 </script>
 </body>
 </html>
