@@ -109,6 +109,35 @@ footer{background:#fff;padding:16px 0 26px;color:var(--mut);font-size:14px;text-
 .stk.out{color:var(--red);font-weight:600}
 .add:disabled{background:#c9cbd1;cursor:not-allowed;filter:none}
 @media(max-width:640px){.top{flex-wrap:wrap}.search{order:3;flex-basis:100%}}
+
+/* ===== اصلاح نمایش موبایل ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.grid>.card{min-width:0}
+@media(max-width:560px){
+ .grid{grid-template-columns:repeat(2,1fr);gap:10px}
+ .card h3{font-size:13px;margin:8px 10px 4px;min-height:40px}
+ .pz{margin:0 10px;font-size:14px}
+ .ft{margin:4px 10px 10px}
+ .im{font-size:48px}
+ .row .card{min-width:150px;max-width:150px}
+ .hdi{padding:10px 12px}
+ .brand b{font-size:19px}
+ .sb input,.df input{font-size:16px}
+}
+
+/* ===== دکمه‌ی شناور سبد خرید ===== */
+.cb{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));inset-inline-start:16px;z-index:8;width:58px;height:58px;padding:0;border-radius:50%;background:#2563eb;color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(37,99,235,.45)}
+.cb b{top:-4px;inset-inline-start:-4px;border:2px solid #fff;min-width:22px;line-height:18px}
+
+/* ===== چاپ فاکتور (فقط فاکتور چاپ می‌شود) ===== */
+@media print{
+ body>*:not(#inv){display:none!important}
+ html,body{background:#fff!important;height:auto!important;overflow:visible!important}
+ #inv{position:static!important;display:block!important;background:none!important;padding:0!important;overflow:visible!important}
+ .paper{width:100%!important;border-radius:0!important;padding:0!important}
+ .acts{display:none!important}
+ #paper th{background:#f1f2f4!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -149,7 +178,6 @@ var S={name:'الماس',shop:'تولیدی الماس مرادی',address:'با
 // ===== اتصال به گوگل شیت: آدرس وب‌اپ را بین کوتیشن‌ها بگذار. اگر خالی باشد سایت با داده‌ی نمونه و بدون اتصال کار می‌کند =====
 var API_URL='https://script.google.com/macros/s/AKfycbzDaU9fI0kofUfbbS2XQ1XUlabiY32t3av2BaZtGIRZbaM3CzxS1msET6d9X1KroEtT/exec';
 // ===== محصولات (فقط برای حالت بدون اتصال): [دسته، نام، قیمت هر عدد (تومان)، تعداد در هر پک، موجودی انبار (تعداد پک)، رنگ زمینه] =====
-// ===== (قدیمی) محصولات: [دسته، نام، قیمت هر عدد (تومان)، تعداد در هر پک، موجودی انبار (تعداد پک)، رنگ زمینه] =====
 var C=['شلوار','مانتو','شومیز','بافت','کت'];
 var E={'شلوار':'👖','مانتو':'🧥','شومیز':'👚','بافت':'🧶','کت':'🥼'};
 var P=[
@@ -306,27 +334,8 @@ function invoice(){
   curInv=num;committed=true;buildInv(num,d);showInv();
  }).catch(function(){setBusy(false);alert('ارتباط با سرور برقرار نشد. اینترنت را بررسی کن و دوباره دکمه‌ی ثبت سفارش را بزن.')});
 }
-var ICSS='body{font-family:Vazirmatn,Tahoma,sans-serif;color:#23254e;margin:0;padding:24px;line-height:1.7}'+
-'.meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:#81858b;font-size:14px;margin:8px 0 12px;border-bottom:2px solid #2563eb;padding-bottom:10px}'+
-'.sh{font-size:13px;color:#81858b;margin-bottom:10px}.by{font-size:14px;margin-bottom:14px}'+
-'table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:11px 14px;border-bottom:1px solid #e0e0e6;text-align:center;white-space:nowrap}th:nth-child(2),td:nth-child(2){text-align:start;white-space:normal}th{background:#f1f2f4}'+
-'.sum{margin-top:16px;margin-inline-start:auto;width:320px;max-width:100%;font-size:15px}.sum div{display:flex;justify-content:space-between;gap:20px;padding:5px 0}'+
-'.sum .g{font-weight:800;font-size:18px;color:#2563eb;border-top:2px solid #2563eb;margin-top:6px;padding-top:8px}';
-function fullDoc(auto){
- return '<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>فاکتور الماس</title>'+
- '<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;800&display=swap" rel="stylesheet"><style>'+ICSS+'</style></head><body>'+invHTML+
- (auto?'<script>window.onload=function(){setTimeout(function(){window.print()},500)}<\/script>':'')+'</body></html>';
-}
-function printInv(){
- var f=document.createElement('iframe');
- f.style.cssText='position:fixed;width:0;height:0;border:0;right:0;bottom:0';
- document.body.appendChild(f);
- var d=f.contentWindow.document;d.open();d.write(fullDoc(false));d.close();
- setTimeout(function(){
-  try{f.contentWindow.focus();f.contentWindow.print()}catch(e){alert('چاپ در این مرورگر پشتیبانی نمی‌شود.')}
-  setTimeout(function(){f.remove()},30000);
- },700);
-}
+// چاپ: همین صفحه چاپ می‌شود و با CSS (بخش @media print) فقط فاکتور دیده می‌شود
+function printInv(){window.print()}
 function editCart(){
  function back(){document.getElementById('inv').classList.remove('show');openCart()}
  if(!committed){back();return}
