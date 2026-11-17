@@ -9,16 +9,17 @@
 *{box-sizing:border-box}
 :root{--red:#2563eb;--ink:#23254e;--mut:#81858b;--line:#e0e0e6;--bg:#f1f2f4}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'Vazirmatn','Tahoma',sans-serif;line-height:1.7}
-button,input{font:inherit;color:inherit}
+button,input,textarea{font:inherit;color:inherit}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1280px;margin:0 auto;padding:0 16px}
 .btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 16px;cursor:pointer;white-space:nowrap}
 body{background:linear-gradient(#eef4ff,#f8fafc) fixed}
 .hd{background:linear-gradient(90deg,#1d4ed8,#3b82f6);color:#fff}
-.hdi{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+.hdi{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:8px}
 .brand{display:flex;align-items:center;gap:10px}
 .lg{width:42px;height:42px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:24px}
 .brand b{font-size:22px;font-weight:800;display:block;line-height:1.2}.brand small{font-size:12px;opacity:.85}
+.hb{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:12px;padding:8px 14px;cursor:pointer;font-size:14px;font-weight:600;max-width:55vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cb{position:relative;background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:12px;padding:9px 14px;cursor:pointer;font-size:16px}
 .cb b{position:absolute;top:-6px;inset-inline-start:-6px;background:#f59e0b;color:#111;border-radius:10px;font-size:12px;min-width:20px;text-align:center;transition:transform .15s}
 .shop{background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.05)}
@@ -82,10 +83,15 @@ footer{background:#fff;padding:16px 0 26px;color:var(--mut);font-size:14px;text-
 .it .n{flex:1}
 .q{display:flex;align-items:center;gap:6px}
 .q button{width:26px;height:26px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer}
-.df{border-top:1px solid var(--line);padding:14px 16px}
-.df input{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px}
+.df{border-top:1px solid var(--line);padding:14px 16px;max-height:55vh;overflow:auto}
+.df input,.df textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px}
+.df .who{font-size:14px;margin-bottom:8px;color:var(--mut)}.df .who b{color:var(--ink)}
+.dv{display:flex;gap:16px;margin-bottom:8px;font-size:14px;flex-wrap:wrap}
+.dv label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.df input[type=radio],.au input[type=checkbox]{width:auto;margin:0}
 .tot{display:flex;justify-content:space-between;font-weight:800;margin:6px 0 10px}
 .pay{width:100%;background:var(--red);color:#fff;border:0;border-radius:10px;padding:12px;cursor:pointer;font-weight:600}
+.pay:disabled{opacity:.6}
 .empty{text-align:center;color:var(--mut);padding:40px 0}
 .inv{position:fixed;inset:0;z-index:20;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.55);overflow:auto;padding:20px}
 .inv.show{display:flex}
@@ -95,7 +101,7 @@ footer{background:#fff;padding:16px 0 26px;color:var(--mut);font-size:14px;text-
 .acts .p{background:var(--red);border-color:var(--red);color:#fff}
 #paper .meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 24px;color:var(--mut);font-size:14px;margin:8px 0 12px;border-bottom:2px solid var(--red);padding-bottom:10px}
 #paper .sh{font-size:13px;color:var(--mut);margin-bottom:10px;line-height:2}
-#paper .by{font-size:14px;margin-bottom:16px}
+#paper .by{font-size:14px;margin-bottom:16px;line-height:2}
 #paper table{width:100%;border-collapse:collapse;font-size:14px}
 #paper th,#paper td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
 #paper th:nth-child(2),#paper td:nth-child(2){text-align:start;white-space:normal}
@@ -122,7 +128,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
  .row .card{min-width:150px;max-width:150px}
  .hdi{padding:10px 12px}
  .brand b{font-size:19px}
- .sb input,.df input{font-size:16px}
+ .sb input,.df input,.df textarea,.au input,.au textarea{font-size:16px}
 }
 
 /* ===== دکمه‌ی شناور سبد خرید ===== */
@@ -144,24 +150,50 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .ths{max-width:100%}
 .mn img{object-fit:contain}
 @media(max-width:760px){.pdg{grid-template-columns:minmax(0,1fr)}}
-
-/* ===== عکس همیشه داخل کادر خودش می‌ماند، مستقل از ابعاد اصلی عکس (سافاری آیفون) ===== */
 .mn{position:relative}
 .mn img,.im img{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:none;max-height:none}
 .mn img{object-fit:contain}
-
-/* ===== جلوگیری قطعی از اسکرول افقی صفحه‌ی محصول، مهم نیست عکس چقدر بزرگ باشد ===== */
 .pd{overflow-x:hidden}
 .pdi{width:100%;overflow-x:hidden}
 .pdg{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .pdg>*,.mn,.inf,.ths{min-width:0;max-width:100%}
 img{max-width:100%}
 @media(max-width:760px){.pdg{grid-template-columns:minmax(0,1fr)}}
+
+/* ===== ورود / ثبت‌نام / حساب من ===== */
+.au{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px}
+.au.show{display:flex}
+.aub{background:#fff;width:min(460px,100%);border-radius:16px;padding:20px;position:relative;margin:auto 0}
+.aub .x{position:absolute;top:12px;inset-inline-end:12px;padding:4px 10px}
+.aub h3{margin:0 0 12px;font-size:19px}
+.tb{display:flex;gap:8px;margin:6px 0 14px;padding-inline-end:48px}
+.tb button{flex:1;padding:9px;border:0;border-radius:10px;background:#eef2ff;color:#1e3a8a;font-weight:600;cursor:pointer}
+.tb button.on{background:var(--red);color:#fff}
+.au label.l{display:block;font-size:14px;font-weight:600;margin:10px 0 4px}
+.au input:not([type=checkbox]),.au textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 10px}
+.au input:focus,.au textarea:focus{outline:2px solid var(--red)}
+.au .ck{display:flex;align-items:center;gap:8px;margin:10px 0 4px;font-size:14px;cursor:pointer}
+.au .go{width:100%;margin-top:14px;background:var(--red);color:#fff;border:0;border-radius:10px;padding:12px;font-weight:600;cursor:pointer}
+.au .go:disabled{opacity:.6}
+.au .go.o{background:#fee2e2;color:#991b1b}
+.am{margin-top:10px;padding:10px;border-radius:10px;display:none;font-size:14px}
+.am.er{display:block;background:#fee2e2;color:#991b1b}.am.ok{display:block;background:#dcfce7;color:#166534}
+.au small{color:var(--mut)}
+.mo{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.mo .h{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.mo .m{font-size:13px;color:var(--mut)}
+.mo ul{margin:6px 0;padding:0 18px;font-size:14px}
+.mo .t2{font-weight:800;color:#16a34a}
+.mo .cn{width:100%;margin-top:10px;padding:8px;border:0;border-radius:10px;background:#fee2e2;color:#991b1b;font-weight:600;cursor:pointer}
+.bs{padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.bs1{background:#fef3c7;color:#92400e}.bs2{background:#dcfce7;color:#166534}.bs3{background:#fee2e2;color:#991b1b}
+.hint{font-size:13px;color:var(--mut);margin-top:6px}
 </style>
 </head>
 <body>
 <header class="hd"><div class="wrap hdi">
 <div class="brand"><span class="lg">💎</span><div><b>الماس</b><small>عمده‌فروشی پوشاک زنانه</small></div></div>
+<button class="hb" id="ab" onclick="openAcc()">ورود / ثبت‌نام</button>
 <button class="cb" onclick="openCart()">🛒<b id="n">۰</b></button>
 </div></header>
 <div class="shop"><div class="wrap shi"><div class="av">💎</div><div><b id="shn"></b><small>مدیریت: مرادی · فروش به‌صورت پک</small></div></div></div>
@@ -181,8 +213,12 @@ img{max-width:100%}
 <div class="dh"><span>سبد خرید</span><button class="btn" onclick="closeCart()">✕</button></div>
 <div class="items" id="items"></div>
 <div class="df">
-<input id="cn" placeholder="نام خریدار / نام فروشگاه (برای فاکتور)">
-<input id="cp" placeholder="شماره تماس">
+<div class="who" id="who"></div>
+<div class="dv">
+<label><input type="radio" name="dm" value="addr" checked onchange="dmode()"> ارسال به آدرس</label>
+<label><input type="radio" name="dm" value="pickup" onchange="dmode()"> تحویل حضوری</label>
+</div>
+<textarea id="ca" rows="2" placeholder="آدرس کامل تحویل"></textarea>
 <div class="tot"><span>مبلغ قابل پرداخت</span><span id="tt">۰</span></div>
 <button class="pay" id="pay" onclick="invoice()">ثبت سفارش و نمایش فاکتور</button>
 </div>
@@ -191,37 +227,60 @@ img{max-width:100%}
 <div class="inv" id="inv"><div class="paper"><div id="paper"></div>
 <div class="acts"><button class="p" onclick="printInv()">🖨 چاپ فاکتور</button><button onclick="editCart()">✏️ ویرایش سبد خرید</button><button onclick="done()">بستن و سفارش جدید</button></div></div></div>
 
+<!-- ورود / ثبت‌نام -->
+<div class="au" id="au"><div class="aub">
+<button class="btn x" onclick="closeAuth()">✕</button>
+<h3>💎 حساب کاربری الماس</h3>
+<div class="tb"><button id="lt" class="on" onclick="authTab('l')">ورود</button><button id="rt" onclick="authTab('r')">ثبت‌نام</button></div>
+<div id="lf">
+<label class="l">نام کاربری یا شماره همراه</label><input id="lu" dir="ltr" autocomplete="username">
+<label class="l">رمز عبور</label><input id="lp" type="password" dir="ltr" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+<button class="go" id="lgo" onclick="doLogin()">ورود</button>
+</div>
+<div id="rf" style="display:none">
+<label class="l">نام و نام خانوادگی / نام فروشگاه</label><input id="rn">
+<label class="l">نام کاربری <small>(حداقل ۳ حرف، بدون فاصله)</small></label><input id="ru" dir="ltr" autocomplete="username">
+<label class="l">شماره همراه</label><input id="rph" dir="ltr" inputmode="numeric" placeholder="09123456789" autocomplete="tel">
+<label class="l">رمز عبور <small>(حداقل ۴ کاراکتر)</small></label><input id="rp" type="password" dir="ltr" autocomplete="new-password">
+<label class="l">تکرار رمز عبور</label><input id="rp2" type="password" dir="ltr" autocomplete="new-password">
+<label class="l">آدرس</label><textarea id="ra" rows="2" placeholder="آدرس کامل"></textarea>
+<label class="ck"><input type="checkbox" id="rpk" onchange="pkToggle('rpk','ra')"> تحویل حضوری (آدرس لازم نیست)</label>
+<button class="go" id="rgo" onclick="doReg()">ثبت‌نام</button>
+</div>
+<div class="am" id="am"></div>
+</div></div>
+
+<!-- حساب من -->
+<div class="au" id="ac"><div class="aub">
+<button class="btn x" onclick="closeAcc()">✕</button>
+<h3>👤 حساب من</h3>
+<div class="tb"><button id="ot" class="on" onclick="accTab('o')">سفارش‌های من</button><button id="pt" onclick="accTab('p')">مشخصات و آدرس</button></div>
+<div id="mo">در حال بارگذاری...</div>
+<div id="mp" style="display:none">
+<label class="l">نام</label><input id="pn">
+<label class="l">شماره همراه</label><input id="pph" dir="ltr" disabled>
+<div class="hint">برای تغییر شماره همراه با فروشگاه تماس بگیرید.</div>
+<label class="l">آدرس</label><textarea id="pa" rows="2" placeholder="آدرس کامل"></textarea>
+<label class="ck"><input type="checkbox" id="ppk" onchange="pkToggle('ppk','pa')"> تحویل حضوری (آدرس لازم نیست)</label>
+<div class="hint">با ذخیره‌ی آدرس جدید، آدرس سفارش‌هایی که هنوز ارسال نشده‌اند هم تغییر می‌کند.</div>
+<label class="l">رمز عبور جدید <small>(اگر نمی‌خواهی عوض شود خالی بگذار)</small></label><input id="pnp" type="password" dir="ltr" autocomplete="new-password">
+<button class="go" id="psv" onclick="saveProf()">ذخیره</button>
+<button class="go o" onclick="logout()">خروج از حساب</button>
+<div class="am" id="pam"></div>
+</div>
+</div></div>
+
 <script>
 // ===== اطلاعات مغازه: تولیدی و پخش پوشاک زنانه =====
 // شماره‌ها را با | از هم جدا کن؛ هر کدام در یک خط جدا نمایش داده می‌شود
 var S={name:'الماس',shop:'تولیدی الماس مرادی',address:'بازار بزرگ تهران بازار مسگرها کوچه خسروی پاساژ نیک پ1',phone:'علیرضا: 09331805391|پخش: 02155617531',hours:'9:00 الی 17:00'};
-// ===== اتصال به گوگل شیت: آدرس وب‌اپ را بین کوتیشن‌ها بگذار. اگر خالی باشد سایت با داده‌ی نمونه و بدون اتصال کار می‌کند =====
+// ===== اتصال به گوگل شیت (الزامی: ثبت‌نام و سفارش فقط با سرور کار می‌کند) =====
 var API_URL='https://script.google.com/macros/s/AKfycbzDaU9fI0kofUfbbS2XQ1XUlabiY32t3av2BaZtGIRZbaM3CzxS1msET6d9X1KroEtT/exec';
-// ===== محصولات (فقط برای حالت بدون اتصال): [دسته، نام، قیمت هر عدد (تومان)، تعداد در هر پک، موجودی انبار (تعداد پک)، رنگ زمینه] =====
-var C=['شلوار','مانتو','شومیز','بافت','کت'];
+var C=[];
 var E={'شلوار':'👖','مانتو':'🧥','شومیز':'👚','بافت':'🧶','کت':'🥼'};
-var P=[
-['شلوار','شلوار جین مام‌فیت',450000,6,24,'#e8f0ff'],
-['شلوار','شلوار کتان راسته',380000,6,15,'#eaf7ee'],
-['شلوار','شلوار پارچه‌ای دمپا',420000,4,3,'#f3eaff'],
-['مانتو','مانتو اسپرت بلند',700000,4,12,'#fff1e6'],
-['مانتو','مانتو مجلسی کرپ',950000,4,0,'#fdeaf4'],
-['مانتو','مانتو جلوباز تابستانه',600000,6,30,'#e9f5f7'],
-['شومیز','شومیز حریر یقه‌دار',320000,6,8,'#ffeaea'],
-['شومیز','شومیز ساتن آستین‌پفی',400000,6,40,'#fdf3e1'],
-['شومیز','شومیز نخی ساده',260000,8,18,'#eaf7ee'],
-['بافت','پلیور بافت دورس',450000,4,5,'#f3eaff'],
-['بافت','ژاکت بافت کش‌دار',500000,4,22,'#e8f0ff'],
-['بافت','ست بافت دو تکه',800000,3,2,'#fdeaf4'],
-['کت','کت تک جین',650000,4,10,'#e9f5f7'],
-['کت','کت رسمی ساده',1050000,4,14,'#eef0f3'],
-['کت','کت کوتاه تویید',900000,3,7,'#fff1e6']
-].map(function(p,i){return {id:i,sid:i+1,cat:p[0],name:p[1],unit:p[2],pack:p[3],stock:p[4],bg:p[5],img:'',old:i%3===0?Math.round(p[2]*1.15/1000)*1000:0,desc:''}});
+var P=[];
 var cat='همه',cart=[],pend=null;
-var sig=P.map(function(p){return p.id+':'+p.stock}).join(',');
-try{var sv=JSON.parse(localStorage.getItem('almasStock')||'null');
- if(sv&&sv.sig===sig&&sv.s.length===P.length)P.forEach(function(p,i){p.stock=sv.s[i]})}catch(e){}
-function saveStock(){if(API_URL)return;try{localStorage.setItem('almasStock',JSON.stringify({sig:sig,s:P.map(function(p){return p.stock})}))}catch(e){}}
+function $(i){return document.getElementById(i)}
 function fa(x){return Math.round(x).toLocaleString('fa-IR')}
 function pp(p){return p.unit*p.pack}
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
@@ -231,9 +290,106 @@ function ph(p,src){var em=E[p.cat]||'🛍';return src?'<img src="images/'+src+'"
 function pic(p){return ph(p,imgs(p)[0])}
 function disc(p){return p.old>p.unit?Math.round((1-p.unit/p.old)*100):0}
 function inCart(id){var f=cart.filter(function(c){return c.id===id})[0];return f?f.q:0}
+function dt(iso){var d=new Date(iso);if(isNaN(d))return String(iso);return d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}
+
+// ===== حساب کاربری =====
+var U=null; // {id,user,pass,name,phone,addr}
+try{var su=JSON.parse(localStorage.getItem('almasUser')||'null');if(su&&su.user&&su.pass)U={user:su.user,pass:su.pass,name:'',phone:'',addr:''}}catch(e){}
+function saveU(){try{if(U)localStorage.setItem('almasUser',JSON.stringify({user:U.user,pass:U.pass}));else localStorage.removeItem('almasUser')}catch(e){}}
+function setU(pu,pass){U={id:pu.id,user:pu.user,pass:pass,name:pu.name,phone:pu.phone,addr:pu.addr};saveU();hdr()}
+function hdr(){$('ab').textContent=U?'👤 '+(U.name||U.user):'ورود / ثبت‌نام';fillCheckout()}
+function api(action,data){
+ var b={action:action};if(U){b.user=U.user;b.pass=U.pass}
+ return fetch(API_URL,{method:'POST',body:JSON.stringify(Object.assign(b,data||{}))}).then(function(r){return r.json()});
+}
+function needLogin(){if(U)return false;openAuth();return true}
+function openAuth(){$('au').classList.add('show');authMsg('')}
+function closeAuth(){$('au').classList.remove('show')}
+function authMsg(t,c){var m=$('am');m.className='am'+(t?' '+(c||'er'):'');m.textContent=t||''}
+function authTab(t){
+ $('lf').style.display=t==='l'?'block':'none';$('rf').style.display=t==='r'?'block':'none';
+ $('lt').className=t==='l'?'on':'';$('rt').className=t==='r'?'on':'';authMsg('');
+}
+function pkToggle(c,a){$(a).style.display=$(c).checked?'none':'block'}
+function doLogin(){
+ var u=$('lu').value.trim(),p=$('lp').value;
+ if(!u||!p)return authMsg('نام کاربری و رمز عبور را وارد کن.');
+ $('lgo').disabled=true;authMsg('در حال ورود...','ok');
+ api('login',{user:u,pass:p}).then(function(r){
+  if(!r.ok){authMsg(r.error||'ورود انجام نشد.');return}
+  setU(r.user,p);$('lp').value='';closeAuth();
+ }).catch(function(){authMsg('ارتباط با سرور برقرار نشد.')}).then(function(){$('lgo').disabled=false});
+}
+function doReg(){
+ var pk=$('rpk').checked,p=$('rp').value;
+ if($('rn').value.trim().length<2)return authMsg('نام را وارد کن.');
+ if(p!==$('rp2').value)return authMsg('رمز عبور و تکرار آن یکسان نیست.');
+ $('rgo').disabled=true;authMsg('در حال ثبت‌نام...','ok');
+ api('register',{username:$('ru').value.trim(),password:p,phone:$('rph').value,name:$('rn').value.trim(),address:$('ra').value.trim(),pickup:pk}).then(function(r){
+  if(!r.ok){authMsg(r.error||'ثبت‌نام انجام نشد.');return}
+  setU(r.user,p);closeAuth();
+ }).catch(function(){authMsg('ارتباط با سرور برقرار نشد.')}).then(function(){$('rgo').disabled=false});
+}
+function logout(){U=null;saveU();cart=[];upd();hdr();closeAcc()}
+function authFail(r){if(r&&r.auth){U=null;saveU();hdr();openAuth();authMsg(r.error);return true}return false}
+// ورود خودکار با اطلاعات ذخیره‌شده
+if(U)api('login',{}).then(function(r){if(r.ok)setU(r.user,U.pass);else if(r.auth){U=null;saveU();hdr()}}).catch(function(){});
+
+// ===== حساب من: سفارش‌ها و پروفایل =====
+var MO=[];
+var STS={'ثبت شد':['در انتظار تایید','bs1'],'تایید نهایی':['تایید نهایی شده','bs2'],'ارسال شد':['ارسال شده','bs2'],'لغو شد':['لغو شده','bs3']};
+function openAcc(){
+ if(!U){openAuth();return}
+ $('ac').classList.add('show');accTab('o');
+}
+function closeAcc(){$('ac').classList.remove('show')}
+function accTab(t){
+ $('mo').style.display=t==='o'?'block':'none';$('mp').style.display=t==='p'?'block':'none';
+ $('ot').className=t==='o'?'on':'';$('pt').className=t==='p'?'on':'';
+ if(t==='o')loadMy();
+ else{$('pn').value=U.name||'';$('pph').value=U.phone||'';$('pa').value=U.addr||'';$('ppk').checked=!U.addr;pkToggle('ppk','pa');$('pnp').value='';var m=$('pam');m.className='am';m.textContent=''}
+}
+function loadMy(){
+ $('mo').textContent='در حال بارگذاری...';
+ api('myOrders',{}).then(function(r){
+  if(authFail(r)){closeAcc();return}
+  if(!r.ok){$('mo').textContent=r.error||'خطا';return}
+  MO=r.orders||[];drawMy();
+ }).catch(function(){$('mo').textContent='ارتباط با سرور برقرار نشد.'});
+}
+function drawMy(){
+ $('mo').innerHTML=MO.length?MO.map(function(o){
+  var s=STS[o.status]||[o.status,'bs1'];
+  var li=String(o.items).split('، ').map(function(t){return '<li>'+esc(t)+'</li>'}).join('');
+  return '<div class="mo"><div class="h"><b>فاکتور <bdi dir="ltr">'+esc(o.inv)+'</bdi></b><span class="bs '+s[1]+'">'+s[0]+'</span></div>'+
+  '<div class="m">🕒 '+dt(o.date)+'</div><ul>'+li+'</ul><div class="t2">مبلغ کل: '+fa(o.total)+' تومان</div>'+
+  '<div class="m">📍 '+esc(o.addr||'—')+'</div>'+
+  (o.status==='ثبت شد'?'<button class="cn" data-i="'+esc(o.inv)+'" onclick="myCancel(this.dataset.i)">✕ لغو سفارش</button>':'')+'</div>'}).join(''):'<div class="empty">هنوز سفارشی ثبت نکرده‌اید.</div>';
+}
+function myCancel(inv){
+ if(!confirm('این سفارش لغو شود؟'))return;
+ api('cancel',{inv:inv}).then(function(r){
+  if(authFail(r)){closeAcc();return}
+  if(r.products)applyProducts(r.products);
+  if(r.orders){MO=r.orders;drawMy()}
+  if(!r.ok){alert(r.error||'لغو انجام نشد.');loadMy()}
+ }).catch(function(){alert('ارتباط با سرور برقرار نشد.')});
+}
+function saveProf(){
+ var m=$('pam'),pk=$('ppk').checked,np=$('pnp').value;
+ $('psv').disabled=true;m.className='am ok';m.textContent='در حال ذخیره...';
+ api('updateProfile',{name:$('pn').value.trim(),address:$('pa').value.trim(),pickup:pk,newPass:np}).then(function(r){
+  if(authFail(r)){closeAcc();return}
+  if(!r.ok){m.className='am er';m.textContent=r.error||'ذخیره نشد.';return}
+  setU(r.user,np||U.pass);MO=r.orders||MO;$('pnp').value='';
+  m.className='am ok';m.textContent='✓ اطلاعات ذخیره شد.';
+ }).catch(function(){m.className='am er';m.textContent='ارتباط با سرور برقرار نشد.'}).then(function(){$('psv').disabled=false});
+}
+
+// ===== فروشگاه =====
 function nav(){
  var it=[['همه','🛍'],[DISC,'🔥']].concat(C.map(function(c){return [c,E[c]||'👗']}));
- document.getElementById('nav').innerHTML=it.map(function(x){
+ $('nav').innerHTML=it.map(function(x){
   return '<button class="sty'+(x[0]===cat?' on':'')+'" data-c="'+x[0].replace(/"/g,'&quot;')+'" onclick="setCat(this.dataset.c)"><i>'+x[1]+'</i><span>'+esc(x[0])+'</span></button>'}).join('');
 }
 function setCat(c){cat=c;nav();draw()}
@@ -243,30 +399,31 @@ function card(p){
  '<div class="ft"><span>'+fa(p.pack)+' عدد در یک پک</span>'+(p.stock>0&&p.stock<=3?'<em>'+fa(p.stock)+' پک مانده</em>':'')+'</div></div>';
 }
 function draw(){
- var q=document.getElementById('q').value.trim();
+ var q=$('q').value.trim();
  var l=P.filter(function(p){return (cat==='همه'||(cat===DISC?disc(p)>0:p.cat===cat))&&(!q||p.name.indexOf(q)>-1)});
- document.getElementById('ttl').textContent=cat==='همه'?'همه‌ی محصولات':cat;
- document.getElementById('grid').innerHTML=l.length?l.map(card).join(''):'<p>کالایی پیدا نشد.</p>';
+ $('ttl').textContent=cat==='همه'?'همه‌ی محصولات':cat;
+ $('grid').innerHTML=l.length?l.map(card).join(''):'<p>کالایی پیدا نشد.</p>';
 }
 function add(id,n){
+ if(needLogin())return false;
  n=n||1;
  if(inCart(id)+n>P[id].stock){alert('موجودی کافی نیست. موجودی انبار این کالا '+fa(P[id].stock)+' پک است.');return false}
  var f=cart.filter(function(c){return c.id===id})[0];
  if(f)f.q+=n;else cart.push({id:id,q:n});
  upd();
- var b=document.getElementById('n');b.style.transform='scale(1.4)';setTimeout(function(){b.style.transform=''},180);
+ var b=$('n');b.style.transform='scale(1.4)';setTimeout(function(){b.style.transform=''},180);
  return true;
 }
 var cur=0,pq=1,mi=0;
-function openProd(id){cur=id;pq=1;mi=0;renderProd();var d=document.getElementById('pd');d.classList.add('show');d.scrollTop=0;document.body.style.overflow='hidden'}
-function closeProd(){document.getElementById('pd').classList.remove('show');document.body.style.overflow=''}
-function setMi(i){mi=i;var k=document.scrollingElement?0:0;renderProd()}
+function openProd(id){cur=id;pq=1;mi=0;renderProd();var d=$('pd');d.classList.add('show');d.scrollTop=0;document.body.style.overflow='hidden'}
+function closeProd(){$('pd').classList.remove('show');document.body.style.overflow=''}
+function setMi(i){mi=i;renderProd()}
 function renderProd(){
  var p=P[cur],im=imgs(p),av=p.stock-inCart(cur),d=disc(p);
  if(pq>av)pq=Math.max(1,av);
  var th=im.length>1?im.map(function(x,i){return '<button class="th'+(i===mi?' on':'')+'" onclick="setMi('+i+')"><img src="images/'+x+'" alt=""></button>'}).join(''):'';
  var sim=P.filter(function(x){return x.cat===p.cat&&x.id!==p.id}).slice(0,8);
- document.getElementById('pdi').innerHTML=
+ $('pdi').innerHTML=
  '<button class="bk" onclick="closeProd()">→ بازگشت</button><div class="pdg"><div><div class="mn" style="background:'+p.bg+'">'+ph(p,im[mi])+'</div><div class="ths">'+th+'</div></div>'+
  '<div class="inf"><h1>'+esc(p.name)+'</h1><div class="bd"><span class="'+(p.stock>0?'ok':'no')+'">'+(p.stock>0?'موجود: '+fa(p.stock)+' پک':'ناموجود')+'</span>'+(d?'<span class="dcb">'+fa(d)+'٪ تخفیف</span>':'')+'</div>'+
  '<div class="box"><div class="r"><span>قیمت هر عدد</span><b class="g">'+fa(p.unit)+' تومان'+(d?' <s>'+fa(p.old)+'</s>':'')+'</b></div><div class="r"><span>تعداد در پک</span><b>'+fa(p.pack)+' عدد</b></div><div class="r"><span>قیمت کل پک</span><b class="g">'+fa(pp(p))+' تومان'+(d?' <s>'+fa(p.old*p.pack)+'</s>':'')+'</b></div></div>'+
@@ -275,24 +432,37 @@ function renderProd(){
  (sim.length?'<div class="sim"><h3>محصولات مشابه</h3><div class="row">'+sim.map(card).join('')+'</div></div>':'')+
  '<div class="bar"><span>تعداد پک</span><div class="st"><button onclick="pqc(-1)">−</button><b id="pqv">'+fa(pq)+'</b><button onclick="pqc(1)">+</button></div><button class="ad" id="adb" onclick="addProd()"'+(av<=0?' disabled':'')+'>'+(av<=0?(p.stock<=0?'ناموجود':'همه‌ی موجودی در سبد است'):'🛒 افزودن به سبد')+'</button></div>';
 }
-function pqc(d){var av=P[cur].stock-inCart(cur);pq=Math.max(1,Math.min(Math.max(av,1),pq+d));document.getElementById('pqv').textContent=fa(pq)}
+function pqc(d){var av=P[cur].stock-inCart(cur);pq=Math.max(1,Math.min(Math.max(av,1),pq+d));$('pqv').textContent=fa(pq)}
 function addProd(){
  if(!add(cur,pq))return;
- pq=1;var b=document.getElementById('adb');b.textContent='✓ به سبد اضافه شد';
- setTimeout(function(){if(document.getElementById('pd').classList.contains('show'))renderProd()},900);
+ pq=1;var b=$('adb');b.textContent='✓ به سبد اضافه شد';
+ setTimeout(function(){if($('pd').classList.contains('show'))renderProd()},900);
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeProd()});
 function chg(i,d){if(d>0&&cart[i].q>=P[cart[i].id].stock){alert('موجودی کافی نیست. موجودی انبار این کالا '+fa(P[cart[i].id].stock)+' پک است.');return}cart[i].q+=d;if(cart[i].q<1)cart.splice(i,1);upd()}
 function total(){return cart.reduce(function(s,c){return s+pp(P[c.id])*c.q},0)}
 function upd(){
- document.getElementById('n').textContent=fa(cart.reduce(function(s,c){return s+c.q},0));
- document.getElementById('tt').textContent=fa(total())+' تومان';
- document.getElementById('items').innerHTML=cart.length?cart.map(function(c,i){var p=P[c.id];
-  return '<div class="it"><div class="e" style="background:'+p.bg+'">'+pic(p)+'</div><div class="n">'+p.name+'<br><small style="color:var(--mut)">پک '+fa(p.pack)+' تایی · '+fa(pp(p))+' تومان</small></div>'+
+ $('n').textContent=fa(cart.reduce(function(s,c){return s+c.q},0));
+ $('tt').textContent=fa(total())+' تومان';
+ $('items').innerHTML=cart.length?cart.map(function(c,i){var p=P[c.id];
+  return '<div class="it"><div class="e" style="background:'+p.bg+'">'+pic(p)+'</div><div class="n">'+esc(p.name)+'<br><small style="color:var(--mut)">پک '+fa(p.pack)+' تایی · '+fa(pp(p))+' تومان</small></div>'+
   '<div class="q"><button onclick="chg('+i+',1)">+</button>'+fa(c.q)+'<button onclick="chg('+i+',-1)">−</button></div></div>'}).join(''):'<div class="empty">سبد خرید شما خالی است</div>';
 }
-function openCart(){document.getElementById('ov').classList.add('show');document.getElementById('dr').classList.add('show')}
-function closeCart(){document.getElementById('ov').classList.remove('show');document.getElementById('dr').classList.remove('show')}
+// بخش خریدار و نحوه‌ی تحویل در سبد
+function fillCheckout(){
+ $('who').innerHTML=U?'خریدار: <b>'+esc(U.name||U.user)+'</b>'+(U.phone?' · '+esc(U.phone):''):'برای ثبت سفارش باید وارد حساب شوید.';
+ if(U&&!$('ca').value)$('ca').value=U.addr||'';
+}
+function dmode(){
+ var pk=document.querySelector('input[name=dm]:checked').value==='pickup';
+ $('ca').style.display=pk?'none':'block';
+}
+function openCart(){
+ fillCheckout();
+ if(U&&!U.addr&&!$('ca').value){document.querySelector('input[name=dm][value=pickup]').checked=true;dmode()}
+ $('ov').classList.add('show');$('dr').classList.add('show');
+}
+function closeCart(){$('ov').classList.remove('show');$('dr').classList.remove('show')}
 function invNo(d){
  var y,m,dd,z=function(n){return ('0'+n).slice(-2)};
  try{
@@ -306,77 +476,77 @@ function invNo(d){
  return t.replace(/\d/g,function(c){return '۰۱۲۳۴۵۶۷۸۹'[c]});
 }
 var invHTML='',committed=false,curInv='';
-function api(action,data){
- return fetch(API_URL,{method:'POST',body:JSON.stringify(Object.assign({action:action},data))}).then(function(r){return r.json()});
-}
 function applyProducts(list){
  var keep=cart.map(function(c){return {sid:P[c.id]&&P[c.id].sid,q:c.q}});
  P=list.map(function(p,i){return {id:i,sid:p.sid,cat:p.cat,name:p.name,unit:p.unit,pack:p.pack,stock:p.stock,bg:p.bg,img:p.img||'',old:Number(p.old)||0,desc:p.desc||''}});
  cart=keep.map(function(k){for(var i=0;i<P.length;i++){if(P[i].sid===k.sid)return {id:i,q:k.q}}return null}).filter(Boolean);
  C=[];P.forEach(function(p){if(C.indexOf(p.cat)<0)C.push(p.cat)});
- if(cat!=='همه'&&C.indexOf(cat)<0)cat='همه';
+ if(cat!=='همه'&&cat!==DISC&&C.indexOf(cat)<0)cat='همه';
  nav();draw();upd();
 }
 function loadProducts(){
  fetch(API_URL+'?action=products&t='+Date.now()).then(function(r){return r.json()}).then(function(r){
   if(!r.ok)throw 0;applyProducts(r.products);
- }).catch(function(){document.getElementById('grid').innerHTML='<p>ارتباط با انبار برقرار نشد. اینترنت را بررسی کن و صفحه را دوباره باز کن.</p>'});
+ }).catch(function(){$('grid').innerHTML='<p>ارتباط با انبار برقرار نشد. اینترنت را بررسی کن و صفحه را دوباره باز کن.</p>'});
 }
-function setBusy(b){var x=document.getElementById('pay');x.disabled=b;x.textContent=b?'در حال ثبت سفارش...':'ثبت سفارش و نمایش فاکتور'}
-function buildInv(num,d){
+function setBusy(b){var x=$('pay');x.disabled=b;x.textContent=b?'در حال ثبت سفارش...':'ثبت سفارش و نمایش فاکتور'}
+function buildInv(num,d,dlv){
  var rows='',sum=0,pieces=0,packs=0;
  cart.forEach(function(c,i){var p=P[c.id],t=pp(p)*c.q;sum+=t;pieces+=p.pack*c.q;packs+=c.q;
   rows+='<tr><td>'+fa(i+1)+'</td><td>'+esc(p.name)+'</td><td>'+fa(c.q)+'</td><td>'+fa(p.pack)+'</td><td>'+fa(p.unit)+'</td><td>'+fa(t)+'</td></tr>'});
  invHTML='<h2 style="margin:0;color:#2563eb">💎 '+esc(S.name)+' <small style="font-size:14px;color:#81858b">عمده‌فروشی پوشاک زنانه</small></h2>'+
  '<div class="meta"><span>فاکتور فروش شماره <bdi dir="ltr">'+num+'</bdi></span><span>تاریخ: '+d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})+'</span></div>'+
  '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'</div>'+
- '<div class="by">خریدار: <b>'+(esc(document.getElementById('cn').value)||'—')+'</b> · تلفن: '+(esc(document.getElementById('cp').value)||'—')+'</div>'+
+ '<div class="by">خریدار: <b>'+esc(U.name||U.user)+'</b> · تلفن: '+esc(U.phone||'—')+'<br>نحوه‌ی تحویل: '+esc(dlv)+'</div>'+
  '<div class="tw"><table><thead><tr><th>ردیف</th><th>شرح کالا</th><th>تعداد پک</th><th>تعداد در پک</th><th>قیمت هر عدد</th><th>مبلغ</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
  '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(sum)+' تومان</span></div></div>';
- document.getElementById('paper').innerHTML=invHTML;
+ $('paper').innerHTML=invHTML;
 }
-function showInv(){closeCart();document.getElementById('inv').classList.add('show')}
+function showInv(){closeCart();$('inv').classList.add('show')}
 function invoice(){
+ if(needLogin())return;
  if(!cart.length){alert('سبد خرید خالی است.');return}
  for(var k=0;k<cart.length;k++){if(cart[k].q>P[cart[k].id].stock){alert('موجودی «'+P[cart[k].id].name+'» کافی نیست. موجودی انبار: '+fa(P[cart[k].id].stock)+' پک');return}}
+ var pk=document.querySelector('input[name=dm]:checked').value==='pickup',addr=$('ca').value.trim();
+ if(!pk&&addr.length<10){alert('آدرس کامل را بنویس یا «تحویل حضوری» را انتخاب کن.');return}
+ var dlv=pk?'تحویل حضوری':addr;
  var items=cart.map(function(c){return {sid:P[c.id].sid,q:c.q}});
  var sg=JSON.stringify(items);
  if(!pend||pend.sg!==sg){var d0=new Date();pend={sg:sg,d:d0,num:invNo(d0)}}
  var num=pend.num,d=pend.d;
- if(!API_URL){ // حالت بدون اتصال: موجودی فقط در همین مرورگر
-  buildInv(num,d);cart.forEach(function(c){P[c.id].stock-=c.q});saveStock();committed=true;pend=null;draw();showInv();return;
- }
  setBusy(true);
- api('order',{inv:num,name:document.getElementById('cn').value,phone:document.getElementById('cp').value,items:items}).then(function(r){
-  setBusy(false);pend=null;
+ api('order',{inv:num,items:items,delivery:pk?'pickup':'address',address:addr}).then(function(r){
+  setBusy(false);
+  if(authFail(r)){closeCart();return}
+  pend=null;
   if(r.products)applyProducts(r.products);
   if(!r.ok){alert(r.error||'ثبت سفارش انجام نشد.');return}
-  curInv=num;committed=true;buildInv(num,d);showInv();
+  curInv=num;committed=true;buildInv(num,d,dlv);showInv();
  }).catch(function(){setBusy(false);alert('ارتباط با سرور برقرار نشد. اینترنت را بررسی کن و دوباره دکمه‌ی ثبت سفارش را بزن.')});
 }
 // چاپ: همین صفحه چاپ می‌شود و با CSS (بخش @media print) فقط فاکتور دیده می‌شود
 function printInv(){window.print()}
 function editCart(){
- function back(){document.getElementById('inv').classList.remove('show');openCart()}
+ function back(){$('inv').classList.remove('show');openCart()}
  if(!committed){back();return}
- if(!API_URL){cart.forEach(function(c){P[c.id].stock+=c.q});saveStock();committed=false;draw();back();return}
  api('cancel',{inv:curInv}).then(function(r){
   if(!r.ok){alert(r.error||'لغو سفارش انجام نشد.');return}
   if(r.products)applyProducts(r.products);
   committed=false;back();
  }).catch(function(){alert('ارتباط با سرور برقرار نشد. دوباره تلاش کن.')});
 }
-function done(){committed=false;curInv='';cart=[];upd();draw();document.getElementById('inv').classList.remove('show')}
-// بخش اطلاعات مغازه (هر شماره در یک خط جدا و با لینک تماس مخصوص خودش)
+function done(){committed=false;curInv='';cart=[];upd();draw();$('inv').classList.remove('show')}
+// بخش اطلاعات مغازه
 (function(){
  var tel=S.phone.split('|').map(function(t){t=t.trim();return /[0-9۰-۹]/.test(t)?'<a href="tel:'+t.replace(/[^0-9+]/g,'')+'">'+esc(t)+'</a>':esc(t)}).join('<br>');
- document.getElementById('info').innerHTML=
+ $('info').innerHTML=
  '<div><b>📍 آدرس مغازه</b><span>'+esc(S.address)+'</span></div>'+
  '<div><b>🕘 ساعت کاری</b><span>'+esc(S.hours)+'</span></div>'+
  '<div><b>📞 شماره تماس</b><span>'+tel+'</span></div>';
 })();
-document.getElementById('shn').textContent=S.shop;
-if(API_URL){document.getElementById('grid').innerHTML='<p>در حال بارگذاری محصولات...</p>';nav();upd();loadProducts()}else{nav();draw();upd()}
+$('shn').textContent=S.shop;
+hdr();
+$('grid').innerHTML='<p>در حال بارگذاری محصولات...</p>';nav();upd();loadProducts();
 </script>
 </body>
 </html>
