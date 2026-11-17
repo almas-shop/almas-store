@@ -188,12 +188,15 @@ img{max-width:100%}
 .bs{padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
 .bs1{background:#fef3c7;color:#92400e}.bs2{background:#dcfce7;color:#166534}.bs3{background:#fee2e2;color:#991b1b}
 .hint{font-size:13px;color:var(--mut);margin-top:6px}
+.hbs{display:flex;gap:8px;min-width:0}.hbs .hb{max-width:42vw}
+.mo .bt{display:flex;gap:8px;margin-top:10px}.mo .bt button{flex:1;margin:0;padding:8px;border:0;border-radius:10px;font-weight:600;cursor:pointer}
+.mo .pr{background:#e0e9ff;color:#1e3a8a}
 </style>
 </head>
 <body>
 <header class="hd"><div class="wrap hdi">
 <div class="brand"><span class="lg">💎</span><div><b>الماس</b><small>عمده‌فروشی پوشاک زنانه</small></div></div>
-<button class="hb" id="ab" onclick="openAcc()">ورود / ثبت‌نام</button>
+<div class="hbs"><button class="hb" id="mb" onclick="openMy()">🧾 سفارش‌های من</button><button class="hb" id="ab" onclick="openAcc()">ورود / ثبت‌نام</button></div>
 <button class="cb" onclick="openCart()">🛒<b id="n">۰</b></button>
 </div></header>
 <div class="shop"><div class="wrap shi"><div class="av">💎</div><div><b id="shn"></b><small>مدیریت: مرادی · فروش به‌صورت پک</small></div></div></div>
@@ -225,7 +228,8 @@ img{max-width:100%}
 </div>
 
 <div class="inv" id="inv"><div class="paper"><div id="paper"></div>
-<div class="acts"><button class="p" onclick="printInv()">🖨 چاپ فاکتور</button><button onclick="editCart()">✏️ ویرایش سبد خرید</button><button onclick="done()">بستن و سفارش جدید</button></div></div></div>
+<div class="acts" id="acts1"><button class="p" onclick="printInv()">🖨 چاپ فاکتور</button><button onclick="editCart()">✏️ ویرایش سبد خرید</button><button onclick="done()">بستن و سفارش جدید</button></div>
+<div class="acts" id="acts2" style="display:none"><button class="p" onclick="printInv()">🖨 چاپ فاکتور</button><button onclick="closeView()">→ بازگشت به سفارش‌ها</button></div></div></div>
 
 <!-- ورود / ثبت‌نام -->
 <div class="au" id="au"><div class="aub">
@@ -253,10 +257,8 @@ img{max-width:100%}
 <!-- حساب من -->
 <div class="au" id="ac"><div class="aub">
 <button class="btn x" onclick="closeAcc()">✕</button>
-<h3>👤 حساب من</h3>
-<div class="tb"><button id="ot" class="on" onclick="accTab('o')">سفارش‌های من</button><button id="pt" onclick="accTab('p')">مشخصات و آدرس</button></div>
-<div id="mo">در حال بارگذاری...</div>
-<div id="mp" style="display:none">
+<h3>👤 حساب من <small>(مشخصات و آدرس)</small></h3>
+<div id="mp">
 <label class="l">نام</label><input id="pn">
 <label class="l">شماره همراه</label><input id="pph" dir="ltr" disabled>
 <div class="hint">برای تغییر شماره همراه با فروشگاه تماس بگیرید.</div>
@@ -268,6 +270,13 @@ img{max-width:100%}
 <button class="go o" onclick="logout()">خروج از حساب</button>
 <div class="am" id="pam"></div>
 </div>
+</div></div>
+
+<!-- سفارش‌های من -->
+<div class="au" id="mr"><div class="aub">
+<button class="btn x" onclick="closeMy()">✕</button>
+<h3>🧾 سفارش‌های من</h3>
+<div id="mo">در حال بارگذاری...</div>
 </div></div>
 
 <script>
@@ -340,15 +349,13 @@ var MO=[];
 var STS={'ثبت شد':['در انتظار تایید','bs1'],'تایید نهایی':['تایید نهایی شده','bs2'],'ارسال شد':['ارسال شده','bs2'],'لغو شد':['لغو شده','bs3']};
 function openAcc(){
  if(!U){openAuth();return}
- $('ac').classList.add('show');accTab('o');
+ $('pn').value=U.name||'';$('pph').value=U.phone||'';$('pa').value=U.addr||'';$('ppk').checked=!U.addr;pkToggle('ppk','pa');$('pnp').value='';
+ var m=$('pam');m.className='am';m.textContent='';
+ $('ac').classList.add('show');
 }
-function closeAcc(){$('ac').classList.remove('show')}
-function accTab(t){
- $('mo').style.display=t==='o'?'block':'none';$('mp').style.display=t==='p'?'block':'none';
- $('ot').className=t==='o'?'on':'';$('pt').className=t==='p'?'on':'';
- if(t==='o')loadMy();
- else{$('pn').value=U.name||'';$('pph').value=U.phone||'';$('pa').value=U.addr||'';$('ppk').checked=!U.addr;pkToggle('ppk','pa');$('pnp').value='';var m=$('pam');m.className='am';m.textContent=''}
-}
+function closeAcc(){$('ac').classList.remove('show');$('mr').classList.remove('show')}
+function openMy(){if(!U){openAuth();return}$('mr').classList.add('show');loadMy()}
+function closeMy(){$('mr').classList.remove('show')}
 function loadMy(){
  $('mo').textContent='در حال بارگذاری...';
  api('myOrders',{}).then(function(r){
@@ -364,7 +371,7 @@ function drawMy(){
   return '<div class="mo"><div class="h"><b>فاکتور <bdi dir="ltr">'+esc(o.inv)+'</bdi></b><span class="bs '+s[1]+'">'+s[0]+'</span></div>'+
   '<div class="m">🕒 '+dt(o.date)+'</div><ul>'+li+'</ul><div class="t2">مبلغ کل: '+fa(o.total)+' تومان</div>'+
   '<div class="m">📍 '+esc(o.addr||'—')+'</div>'+
-  (o.status==='ثبت شد'?'<button class="cn" data-i="'+esc(o.inv)+'" onclick="myCancel(this.dataset.i)">✕ لغو سفارش</button>':'')+'</div>'}).join(''):'<div class="empty">هنوز سفارشی ثبت نکرده‌اید.</div>';
+  '<div class="bt"><button class="pr" data-i="'+esc(o.inv)+'" onclick="viewInv(this.dataset.i)">🧾 نمایش و چاپ فاکتور</button>'+(o.status==='ثبت شد'?'<button class="cn" data-i="'+esc(o.inv)+'" onclick="myCancel(this.dataset.i)">✕ لغو سفارش</button>':'')+'</div></div>'}).join(''):'<div class="empty">هنوز سفارشی ثبت نکرده‌اید.</div>';
 }
 function myCancel(inv){
  if(!confirm('این سفارش لغو شود؟'))return;
@@ -502,7 +509,25 @@ function buildInv(num,d,dlv){
  '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(sum)+' تومان</span></div></div>';
  $('paper').innerHTML=invHTML;
 }
-function showInv(){closeCart();$('inv').classList.add('show')}
+function showInv(){closeCart();$('acts1').style.display='flex';$('acts2').style.display='none';$('inv').classList.add('show')}
+function viewInv(inv){
+ var o=MO.filter(function(x){return x.inv===inv})[0];if(!o)return;
+ var rows='',pieces=0,packs=0,d=new Date(o.date);
+ (o.det||[]).forEach(function(it,i){
+  var p=P.filter(function(x){return String(x.sid)===String(it.sid)})[0]||{};
+  var nm=it.n||p.name||'—',u=it.u!==undefined?it.u:(p.unit||0),pk=it.pk!==undefined?it.pk:(p.pack||0);
+  pieces+=pk*it.q;packs+=it.q;
+  rows+='<tr><td>'+fa(i+1)+'</td><td>'+esc(nm)+'</td><td>'+fa(it.q)+'</td><td>'+fa(pk)+'</td><td>'+fa(u)+'</td><td>'+fa(u*pk*it.q)+'</td></tr>'});
+ if(!rows)rows='<tr><td colspan="6">'+esc(o.items)+'</td></tr>';
+ $('paper').innerHTML='<h2 style="margin:0;color:#2563eb">💎 '+esc(S.name)+' <small style="font-size:14px;color:#81858b">عمده‌فروشی پوشاک زنانه</small></h2>'+
+ '<div class="meta"><span>فاکتور فروش شماره <bdi dir="ltr">'+esc(o.inv)+'</bdi></span><span>تاریخ: '+(isNaN(d)?esc(o.date):d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}))+'</span></div>'+
+ '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'</div>'+
+ '<div class="by">خریدار: <b>'+esc(o.name||'—')+'</b> · تلفن: '+esc(o.phone||'—')+'<br>نحوه‌ی تحویل: '+esc(o.addr||'—')+'<br>وضعیت: '+esc((STS[o.status]||[o.status])[0])+'</div>'+
+ '<div class="tw"><table><thead><tr><th>ردیف</th><th>شرح کالا</th><th>تعداد پک</th><th>تعداد در پک</th><th>قیمت هر عدد</th><th>مبلغ</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+ '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(o.total)+' تومان</span></div></div>';
+ closeMy();$('acts1').style.display='none';$('acts2').style.display='flex';$('inv').classList.add('show');
+}
+function closeView(){$('inv').classList.remove('show');openMy()}
 function invoice(){
  if(needLogin())return;
  if(!cart.length){alert('سبد خرید خالی است.');return}
