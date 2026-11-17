@@ -36,7 +36,7 @@ small{color:#81858b;font-weight:400}
 #msg{margin:10px 0;padding:11px;border-radius:10px;display:none}
 #msg.ok{display:block;background:#dcfce7;color:#166534}#msg.er{display:block;background:#fee2e2;color:#991b1b}#msg.wt{display:block;background:#e0e9ff;color:#1e3a8a}
 .tabs{display:flex;gap:8px;margin-bottom:12px}
-.tabs button{flex:1;padding:11px;border:0;border-radius:12px;background:#fff;font:inherit;font-weight:600;cursor:pointer;color:#1e3a8a;box-shadow:0 2px 10px rgba(30,64,175,.08)}
+.tabs button{flex:1;padding:11px 4px;border:0;border-radius:12px;background:#fff;font:inherit;font-weight:600;cursor:pointer;color:#1e3a8a;box-shadow:0 2px 10px rgba(30,64,175,.08)}
 .tabs button.on{background:#2563eb;color:#fff}
 .tabs i{font-style:normal;background:#f59e0b;color:#111;border-radius:10px;font-size:12px;padding:0 7px;margin-inline-start:6px}
 .fl{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
@@ -52,17 +52,31 @@ small{color:#81858b;font-weight:400}
 .s1,.s2,.s3{padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
 .s1{background:#fef3c7;color:#92400e}.s2{background:#dcfce7;color:#166534}.s3{background:#fee2e2;color:#991b1b}
 .od .a2{display:flex;gap:8px;margin-top:10px}.od .a2 .b{flex:1}
+.od .ad{font-size:14px;margin-top:4px}
+.od .pwr{font-size:14px;margin-top:4px}.od .pwr b{background:#f1f2f4;border-radius:6px;padding:1px 8px;direction:ltr;display:inline-block;user-select:all}
+.lock{max-width:380px;margin:60px auto 0;text-align:center}
+.lock h1{margin-bottom:6px}
 </style>
 </head>
 <body>
 <div class="w">
-<h1>💎 مدیریت محصولات</h1>
-<details class="c" id="set"><summary><b>تنظیمات</b> <small>(فقط بار اول)</small></summary>
-<label>رمز مدیریت</label><input id="pw" type="password" autocomplete="off">
-<label>توکن گیت‌هاب <small>(برای آپلود عکس)</small></label><input id="tk" type="password" autocomplete="off">
-</details>
+<h1>💎 مدیریت الماس</h1>
 <div id="msg"></div>
-<div class="tabs"><button id="t1" class="on" onclick="tab(1)">📦 محصولات</button><button id="t2" onclick="tab(2)">🧾 سفارش‌ها<i id="pc" style="display:none"></i></button></div>
+
+<!-- صفحه‌ی قفل: تا رمز درست زده نشود هیچ چیز از پنل دیده نمی‌شود -->
+<div class="c lock" id="lock">
+<b>ورود مدیر</b>
+<label style="text-align:start">رمز مدیریت</label>
+<input id="pw" type="password" autocomplete="off" onkeydown="if(event.key==='Enter')unlock()">
+<button class="b p" style="width:100%;margin-top:12px" onclick="unlock()">ورود</button>
+</div>
+
+<div id="app" style="display:none">
+<details class="c" id="set"><summary><b>تنظیمات</b> <small>(فقط بار اول)</small></summary>
+<label>توکن گیت‌هاب <small>(برای آپلود عکس)</small></label><input id="tk" type="password" autocomplete="off">
+<button class="b d" style="margin-top:10px" onclick="logout()">خروج از پنل</button>
+</details>
+<div class="tabs"><button id="t1" class="on" onclick="tab(1)">📦 محصولات</button><button id="t2" onclick="tab(2)">🧾 سفارش‌ها<i id="pc" style="display:none"></i></button><button id="t3" onclick="tab(3)">👥 مشتریان</button></div>
 <div id="pg1">
 
 <div class="c" id="fm" style="display:none">
@@ -90,6 +104,20 @@ small{color:#81858b;font-weight:400}
 <div class="fl" id="fl"></div>
 <div id="ol">در حال بارگذاری...</div>
 </div>
+<div id="pg3" style="display:none">
+<div class="c" id="cf" style="display:none">
+<b id="cft"></b>
+<label>نام</label><input id="cnm">
+<label>نام کاربری</label><input id="cu" dir="ltr" autocomplete="off">
+<label>شماره همراه</label><input id="cph" dir="ltr" inputmode="numeric" autocomplete="off">
+<label>رمز عبور</label><input id="cpw" dir="ltr" autocomplete="off">
+<label>آدرس <small>(خالی = تحویل حضوری)</small></label><textarea id="cad" rows="2"></textarea>
+<div style="display:flex;gap:8px;margin-top:14px"><button class="b p" id="csv" onclick="saveC()" style="flex:1">ذخیره</button><button class="b" onclick="closeC()">انصراف</button></div>
+</div>
+<div class="top"><input id="cq" placeholder="جستجو: نام، نام کاربری یا شماره همراه" oninput="drawC()"><button class="b p" onclick="loadC()">↻ بروزرسانی</button></div>
+<div id="cl2">در حال بارگذاری...</div>
+</div>
+</div>
 
 </div>
 
@@ -97,17 +125,40 @@ small{color:#81858b;font-weight:400}
 var API_URL='https://script.google.com/macros/s/AKfycbzDaU9fI0kofUfbbS2XQ1XUlabiY32t3av2BaZtGIRZbaM3CzxS1msET6d9X1KroEtT/exec';
 var REPO='almas-shop/almas-store';
 var COLORS=['#e8f0ff','#eaf7ee','#f3eaff','#fff1e6','#fdeaf4','#e9f5f7','#ffeaea','#fdf3e1'];
-var P=[],cur=null,keep=[];
+var P=[],cur=null,keep=[],PW='';
 function $(i){return document.getElementById(i)}
 function fa(x){return Math.round(x).toLocaleString('fa-IR')}
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function msg(t,c){var m=$('msg');m.className=c||'';m.textContent=t||''}
-try{$('pw').value=localStorage.getItem('apw')||'';$('tk').value=localStorage.getItem('atk')||'';if(!$('pw').value)$('set').open=true}catch(e){}
-function saveSet(){try{localStorage.setItem('apw',$('pw').value.trim());localStorage.setItem('atk',$('tk').value.trim())}catch(e){}}
+function nd(s){return String(s).replace(/[۰-۹]/g,function(c){return c.charCodeAt(0)-1776}).replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632})}
+try{$('tk').value=localStorage.getItem('atk')||''}catch(e){}
 function api(action,data){
- saveSet();
- return fetch(API_URL,{method:'POST',body:JSON.stringify(Object.assign({action:action,password:$('pw').value.trim()},data))}).then(function(r){return r.json()}).then(function(r){if(!r.ok)throw new Error(r.error||'انجام نشد.');return r});
+ try{localStorage.setItem('atk',$('tk').value.trim())}catch(e){}
+ return fetch(API_URL,{method:'POST',body:JSON.stringify(Object.assign({action:action,password:PW},data))}).then(function(r){return r.json()}).then(function(r){if(!r.ok)throw new Error(r.error||'انجام نشد.');return r});
 }
+// ===== قفل پنل =====
+function unlock(auto){
+ var p=$('pw').value.trim();
+ if(!p){if(auto!==true)msg('رمز مدیریت را بنویس.','er');return}
+ PW=p;
+ if(auto!==true)msg('در حال بررسی...','wt');
+ api('adminLogin',{}).then(function(){
+  try{localStorage.setItem('apw',p)}catch(e){}
+  $('pw').value='';$('lock').style.display='none';$('app').style.display='block';msg('');
+  load();loadO(true);loadC(true);
+ }).catch(function(e){
+  PW='';$('lock').style.display='block';$('app').style.display='none';
+  try{localStorage.removeItem('apw')}catch(x){}
+  if(auto!==true)msg(e.message==='Failed to fetch'?'ارتباط با سرور برقرار نشد.':e.message,'er');else msg('');
+ });
+}
+function logout(){
+ PW='';try{localStorage.removeItem('apw')}catch(e){}
+ P=[];O=[];CU=[];
+ $('app').style.display='none';$('lock').style.display='block';msg('');
+}
+try{var sp=localStorage.getItem('apw');if(sp){$('pw').value=sp;unlock(true)}}catch(e){}
+
 function imgs(p){return String(p.img||'').split(',').map(function(x){return x.trim()}).filter(function(x){return /^[\w.\-]+$/.test(x)})}
 function load(){
  fetch(API_URL+'?action=products&t='+Date.now()).then(function(r){return r.json()}).then(function(r){
@@ -161,7 +212,6 @@ function upload(name,b64,tk){
 }
 async function save(){
  var cat=$('cat').value.trim(),nm=$('nm').value.trim(),un=+$('un').value,pk=+$('pk').value,st=$('st').value===''?NaN:+$('st').value,files=$('im').files,tk=$('tk').value.trim();
- if(!$('pw').value.trim()){$('set').open=true;return msg('رمز مدیریت را بنویس.','er')}
  if(!cat||!nm||!(un>0)||!(pk>0)||isNaN(st)||st<0)return msg('دسته، نام، قیمت، تعداد در پک و موجودی را کامل پر کن.','er');
  if(files.length&&!tk){$('set').open=true;return msg('برای آپلود عکس، توکن گیت‌هاب لازم است.','er')}
  $('sv').disabled=true;
@@ -181,16 +231,14 @@ async function save(){
 var O=[],ofl='pending';
 var ST={'ثبت شد':['در انتظار تایید','s1','pending'],'تایید نهایی':['تایید نهایی شده','s2','done'],'ارسال شد':['ارسال شده','s2','shipped'],'لغو شد':['لغو شده','s3','cancel']};
 function sk(o){return (ST[o.status]||['','s1','pending'])[2]}
-function nd(s){return String(s).replace(/[۰-۹]/g,function(c){return c.charCodeAt(0)-1776}).replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632})}
 function dt(iso){var d=new Date(iso);if(isNaN(d))return String(iso);return d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}
 function tab(n){
- $('pg1').style.display=n===1?'block':'none';$('pg2').style.display=n===2?'block':'none';
- $('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';msg('');
- if(n===2)loadO();
+ $('pg1').style.display=n===1?'block':'none';$('pg2').style.display=n===2?'block':'none';$('pg3').style.display=n===3?'block':'none';
+ $('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';$('t3').className=n===3?'on':'';msg('');
+ if(n===2)loadO();if(n===3)loadC();
 }
 function setF(f){ofl=f;drawO()}
 function loadO(quiet){
- if(!$('pw').value.trim()){if(!quiet){$('set').open=true;msg('رمز مدیریت را بنویس.','er')}return}
  api('listOrders',{}).then(function(r){O=r.orders||[];drawO()}).catch(function(e){if(!quiet){$('ol').textContent='';msg(e.message,'er')}});
 }
 function ocard(o){
@@ -199,6 +247,7 @@ function ocard(o){
  var tel=nd(String(o.phone).replace(/[^0-9+۰-۹٠-٩]/g,''));
  return '<div class="od"><div class="h"><div><div class="nm">'+esc(o.name||'—')+'</div><div class="ph"><a href="tel:'+esc(tel)+'">'+esc(o.phone||'—')+'</a></div></div><span class="'+s[1]+'">'+s[0]+'</span></div>'+
  '<div class="meta">🕒 '+dt(o.date)+' · فاکتور <bdi dir="ltr">'+esc(o.inv)+'</bdi></div>'+
+ '<div class="ad">📍 '+esc(o.addr||'—')+'</div>'+
  '<ul>'+items+'</ul><div class="tt">مبلغ کل: '+fa(o.total)+' تومان</div>'+
  (s[2]==='pending'?'<div class="a2"><button class="b p" data-a="confirmOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">✓ تایید نهایی</button><button class="b d" data-a="cancelOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">✕ لغو و برگشت به انبار</button></div>':s[2]==='done'?'<div class="a2"><button class="b p" data-a="shipOrder" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">🚚 ارسال شد</button></div>':'')+'</div>';
 }
@@ -223,8 +272,36 @@ function oa(a,inv){
   window.scrollTo(0,0);
  }).catch(function(e){msg(e.message,'er');window.scrollTo(0,0);loadO()});
 }
-load();
-if($('pw').value.trim())loadO(true);
+// ===== مشتریان =====
+var CU=[],ced=null;
+function loadC(quiet){
+ api('listCustomers',{}).then(function(r){CU=r.customers||[];drawC()}).catch(function(e){if(!quiet){$('cl2').textContent='';msg(e.message,'er')}});
+}
+function drawC(){
+ var q=nd($('cq').value.trim()).toLowerCase();
+ var l=CU.filter(function(c){return !q||nd(c.name+' '+c.user+' '+c.phone).toLowerCase().indexOf(q)>-1});
+ $('cl2').innerHTML=(l.length?'<div class="meta" style="margin-bottom:8px;color:#81858b;font-size:13px">تعداد مشتریان: '+fa(CU.length)+'</div>':'')+
+ (l.length?l.map(function(c){
+  return '<div class="od"><div class="h"><div><div class="nm">'+esc(c.name||'—')+'</div><div class="ph"><a href="tel:'+esc(c.phone)+'">'+esc(c.phone)+'</a></div></div><button class="b" onclick="openC('+c.id+')">ویرایش</button></div>'+
+  '<div class="meta">🕒 ثبت‌نام: '+dt(c.date)+'</div>'+
+  '<div class="pwr">👤 نام کاربری: <b>'+esc(c.user)+'</b></div>'+
+  '<div class="pwr">🔑 رمز عبور: <b>'+esc(c.pass)+'</b></div>'+
+  '<div class="ad">📍 '+esc(c.addr||'تحویل حضوری')+'</div></div>'}).join(''):'<div class="c">مشتری‌ای پیدا نشد.</div>');
+}
+function openC(id){
+ ced=CU.filter(function(c){return String(c.id)===String(id)})[0];if(!ced)return;
+ $('cft').textContent='ویرایش مشتری: '+ced.name;
+ $('cnm').value=ced.name;$('cu').value=ced.user;$('cph').value=ced.phone;$('cpw').value=ced.pass;$('cad').value=ced.addr;
+ $('cf').style.display='block';window.scrollTo(0,0);msg('');
+}
+function closeC(){$('cf').style.display='none';ced=null}
+function saveC(){
+ if(!ced)return;
+ $('csv').disabled=true;msg('در حال ثبت...','wt');
+ api('updateCustomer',{customer:{id:ced.id,name:$('cnm').value.trim(),username:$('cu').value.trim(),phone:$('cph').value.trim(),password:$('cpw').value,address:$('cad').value.trim()}}).then(function(r){
+  CU=r.customers||CU;drawC();closeC();msg('✓ اطلاعات مشتری ذخیره شد.','ok');
+ }).catch(function(e){msg(e.message,'er')}).then(function(){$('csv').disabled=false});
+}
 </script>
 </body>
 </html>
