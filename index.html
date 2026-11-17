@@ -282,7 +282,8 @@ img{max-width:100%}
 <script>
 // ===== اطلاعات مغازه: تولیدی و پخش پوشاک زنانه =====
 // شماره‌ها را با | از هم جدا کن؛ هر کدام در یک خط جدا نمایش داده می‌شود
-var S={name:'الماس',shop:'تولیدی الماس مرادی',address:'بازار بزرگ تهران بازار مسگرها کوچه خسروی پاساژ نیک پ1',phone:'علیرضا: 09331805391|پخش: 02155617531',hours:'9:00 الی 17:00'};
+var S={name:'الماس',shop:'تولیدی الماس مرادی',address:'بازار بزرگ تهران بازار مسگرها کوچه خسروی پاساژ نیک پ1',phone:'علیرضا: 09331805391|پخش: 02155617531',hours:'9:00 الی 17:00',pay:'شماره کارت: 0000-0000-0000-0000|به نام: نام صاحب حساب'};
+function payLine(){return S.pay.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join(' · ')}
 // ===== اتصال به گوگل شیت (الزامی: ثبت‌نام و سفارش فقط با سرور کار می‌کند) =====
 var API_URL='https://script.google.com/macros/s/AKfycbzDaU9fI0kofUfbbS2XQ1XUlabiY32t3av2BaZtGIRZbaM3CzxS1msET6d9X1KroEtT/exec';
 var C=[];
@@ -503,7 +504,7 @@ function buildInv(num,d,dlv){
   rows+='<tr><td>'+fa(i+1)+'</td><td>'+esc(p.name)+'</td><td>'+fa(c.q)+'</td><td>'+fa(p.pack)+'</td><td>'+fa(p.unit)+'</td><td>'+fa(t)+'</td></tr>'});
  invHTML='<h2 style="margin:0;color:#2563eb">💎 '+esc(S.name)+' <small style="font-size:14px;color:#81858b">عمده‌فروشی پوشاک زنانه</small></h2>'+
  '<div class="meta"><span>فاکتور فروش شماره <bdi dir="ltr">'+num+'</bdi></span><span>تاریخ: '+d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})+'</span></div>'+
- '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'</div>'+
+ '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'<br>واریز وجه: '+payLine()+'</div>'+
  '<div class="by">خریدار: <b>'+esc(U.name||U.user)+'</b> · تلفن: '+esc(U.phone||'—')+'<br>نحوه‌ی تحویل: '+esc(dlv)+'</div>'+
  '<div class="tw"><table><thead><tr><th>ردیف</th><th>شرح کالا</th><th>تعداد پک</th><th>تعداد در پک</th><th>قیمت هر عدد</th><th>مبلغ</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
  '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(sum)+' تومان</span></div></div>';
@@ -521,7 +522,7 @@ function viewInv(inv){
  if(!rows)rows='<tr><td colspan="6">'+esc(o.items)+'</td></tr>';
  $('paper').innerHTML='<h2 style="margin:0;color:#2563eb">💎 '+esc(S.name)+' <small style="font-size:14px;color:#81858b">عمده‌فروشی پوشاک زنانه</small></h2>'+
  '<div class="meta"><span>فاکتور فروش شماره <bdi dir="ltr">'+esc(o.inv)+'</bdi></span><span>تاریخ: '+(isNaN(d)?esc(o.date):d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}))+'</span></div>'+
- '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'</div>'+
+ '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'<br>واریز وجه: '+payLine()+'</div>'+
  '<div class="by">خریدار: <b>'+esc(o.name||'—')+'</b> · تلفن: '+esc(o.phone||'—')+'<br>نحوه‌ی تحویل: '+esc(o.addr||'—')+'<br>وضعیت: '+esc((STS[o.status]||[o.status])[0])+'</div>'+
  '<div class="tw"><table><thead><tr><th>ردیف</th><th>شرح کالا</th><th>تعداد پک</th><th>تعداد در پک</th><th>قیمت هر عدد</th><th>مبلغ</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
  '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(o.total)+' تومان</span></div></div>';
@@ -567,7 +568,8 @@ function done(){committed=false;curInv='';cart=[];upd();draw();$('inv').classLis
  $('info').innerHTML=
  '<div><b>📍 آدرس مغازه</b><span>'+esc(S.address)+'</span></div>'+
  '<div><b>🕘 ساعت کاری</b><span>'+esc(S.hours)+'</span></div>'+
- '<div><b>📞 شماره تماس</b><span>'+tel+'</span></div>';
+ '<div><b>📞 شماره تماس</b><span>'+tel+'</span></div>'+
+ '<div><b>💳 شماره کارت برای واریز وجه</b><span>'+S.pay.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'</span></div>';
 })();
 $('shn').textContent=S.shop;
 hdr();
