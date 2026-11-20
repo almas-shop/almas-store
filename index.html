@@ -621,6 +621,36 @@ function done(){committed=false;curInv='';cart=[];upd();draw();$('inv').classLis
 $('shn').textContent=S.shop;
 hdr();
 $('grid').innerHTML='<p>در حال بارگذاری محصولات...</p>';nav();upd();loadProducts();
+ // ===== دکمه‌ی بک مرورگر / گوشی: هر پنجره‌ی بازشو یک ورودی در تاریخچه دارد =====
+(function(){
+ var ids=['dr','pd','au','ac','mr','inv'],hd=0,skip=0;
+ function open(){return ids.filter(function(i){return $(i).classList.contains('show')})}
+ // تعداد ورودی‌های تاریخچه را با تعداد پنجره‌های باز هماهنگ می‌کند
+ function sync(){
+  var n=open().length;
+  while(hd<n){hd++;history.pushState({d:hd},'')}
+  if(hd>n){var k=hd-n;hd=n;skip++;history.go(-k)}
+ }
+ // بالاترین پنجره‌ی باز را می‌بندد
+ function closeTop(){
+  var o=open();
+  if(o.indexOf('inv')>-1){if($('acts2').style.display==='flex')closeView();else done()}
+  else if(o.indexOf('mr')>-1)closeMy();
+  else if(o.indexOf('ac')>-1)closeAcc();
+  else if(o.indexOf('au')>-1)closeAuth();
+  else if(o.indexOf('pd')>-1)closeProd();
+  else if(o.indexOf('dr')>-1)closeCart();
+ }
+ window.addEventListener('popstate',function(e){
+  if(skip>0){skip--;return}
+  var d=(e.state&&e.state.d)||0;
+  if(d<hd){hd=d;closeTop()}
+  sync();
+ });
+ // هر بار پنجره‌ای باز یا بسته شد (با هر روشی) تاریخچه هماهنگ می‌شود
+ var mo=new MutationObserver(sync);
+ ids.forEach(function(i){mo.observe($(i),{attributes:true,attributeFilter:['class']})});
+})();
 </script>
 </body>
 </html>
