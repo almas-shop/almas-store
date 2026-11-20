@@ -233,6 +233,10 @@ img{max-width:100%}
 .abt{padding:18px 4px 0}
 .abt h1{font-size:18px;font-weight:800;margin:0 0 6px;color:var(--ink)}
 .abt p{margin:0;font-size:14px;color:var(--mut)}
+
+/* ===== یادآوری ارسال فیش در فاکتور ===== */
+#paper .note{margin-top:18px;padding:12px 16px;background:#fff7e0;border:2px solid #f59e0b;border-inline-start:8px solid #f59e0b;border-radius:10px;color:#9a3412;font-weight:800;font-size:15px;line-height:2;text-align:center}
+@media print{#paper .note{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 </head>
 <body>
@@ -530,6 +534,8 @@ function invNo(d){
  var t=y+z(m)+z(dd)+'-'+z(d.getHours())+z(d.getMinutes())+z(d.getSeconds())+'-'+('000'+r).slice(-4);
  return t.replace(/\d/g,function(c){return '۰۱۲۳۴۵۶۷۸۹'[c]});
 }
+// پیام یادآوری ارسال فیش (در هر دو حالت فاکتور نمایش داده می‌شود)
+var NOTE='<div class="note">⚠️ لطفاً بعد از واریز وجه، تصویر فیش واریزی را به آیدی تلگرام یا روبیکا ارسال کنید.</div>';
 var invHTML='',committed=false,curInv='';
 function applyProducts(list){
  var keep=cart.map(function(c){return {sid:P[c.id]&&P[c.id].sid,q:c.q}});
@@ -554,7 +560,7 @@ function buildInv(num,d,dlv){
  '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'<br>واریز وجه: '+payLine()+'</div>'+
  '<div class="by">خریدار: <b>'+esc(U.name||U.user)+'</b> · تلفن: '+esc(U.phone||'—')+'<br>نحوه‌ی تحویل: '+esc(dlv)+'</div>'+
  '<div class="tw"><table><thead><tr><th>ردیف</th><th>شرح کالا</th><th>تعداد پک</th><th>تعداد در پک</th><th>قیمت هر عدد</th><th>مبلغ</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
- '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(sum)+' تومان</span></div></div>';
+ '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(sum)+' تومان</span></div></div>'+NOTE;
  $('paper').innerHTML=invHTML;
 }
 function showInv(){closeCart();$('acts1').style.display='flex';$('acts2').style.display='none';$('inv').classList.add('show')}
@@ -572,7 +578,7 @@ function viewInv(inv){
  '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'<br>واریز وجه: '+payLine()+'</div>'+
  '<div class="by">خریدار: <b>'+esc(o.name||'—')+'</b> · تلفن: '+esc(o.phone||'—')+'<br>نحوه‌ی تحویل: '+esc(o.addr||'—')+'<br>وضعیت: '+esc((STS[o.status]||[o.status])[0])+'</div>'+
  '<div class="tw"><table><thead><tr><th>ردیف</th><th>شرح کالا</th><th>تعداد پک</th><th>تعداد در پک</th><th>قیمت هر عدد</th><th>مبلغ</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
- '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(o.total)+' تومان</span></div></div>';
+ '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(o.total)+' تومان</span></div></div>'+NOTE;
  closeMy();$('acts1').style.display='none';$('acts2').style.display='flex';$('inv').classList.add('show');
 }
 function closeView(){$('inv').classList.remove('show');openMy()}
@@ -621,7 +627,8 @@ function done(){committed=false;curInv='';cart=[];upd();draw();$('inv').classLis
 $('shn').textContent=S.shop;
 hdr();
 $('grid').innerHTML='<p>در حال بارگذاری محصولات...</p>';nav();upd();loadProducts();
- // ===== دکمه‌ی بک + تأیید خروج از سایت =====
+
+// ===== دکمه‌ی بک + تأیید خروج از سایت =====
 (function(){
  var ids=['dr','pd','au','ac','mr','inv'],hd=0,skip=0,armed=false;
  function open(){return ids.filter(function(i){return $(i).classList.contains('show')})}
