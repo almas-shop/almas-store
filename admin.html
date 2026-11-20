@@ -283,9 +283,10 @@ function ocard(o){
  var tel=nd(String(o.phone).replace(/[^0-9+۰-۹٠-٩]/g,''));
  function ab(a,t,c){return '<button class="b '+c+'" data-a="'+a+'" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">'+t+'</button>'}
  var btn='';
- if(k==='pending')btn+=ab('confirmOrder','✓ تایید نهایی','p');
- if(k==='done')btn+=ab('shipOrder','🚚 ارسال شد','p');
- if(k!=='cancel')btn+=ab('cancelOrder','✕ لغو سفارش','d');
+  if(k==='pending')btn+=ab('confirmOrder','✓ تایید نهایی','p');
+  if(k==='done')btn+=ab('shipOrder','🚚 ارسال شد','p');
+  // 👇 دکمه لغو فقط برای سفارش‌هایی نمایش داده می‌شود که هنوز ارسال نشده‌اند
+  if(k!=='cancel' && k!=='shipped')btn+=ab('cancelOrder','✕ لغو سفارش','d');
  return '<div class="od"><div class="h"><div><div class="nm">'+esc(o.name||'—')+'</div><div class="ph"><a href="tel:'+esc(tel)+'">'+esc(o.phone||'—')+'</a></div></div><span class="'+s[1]+'">'+s[0]+'</span></div>'+
  '<div class="meta">🕒 '+dt(o.date)+' · فاکتور <bdi dir="ltr">'+esc(o.inv)+'</bdi></div>'+
  '<div class="ad">📍 '+esc(o.addr||'—')+'</div>'+
