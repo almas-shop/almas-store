@@ -228,6 +228,7 @@ img{max-width:100%}
 .hbs{display:flex;gap:8px;min-width:0}.hbs .hb{max-width:42vw}
 .mo .bt{display:flex;gap:8px;margin-top:10px}.mo .bt button{flex:1;margin:0;padding:8px;border:0;border-radius:10px;font-weight:600;cursor:pointer}
 .mo .pr{background:#e0e9ff;color:#1e3a8a}
+.mo .ed{background:#e0e9ff;color:#1e3a8a}
 
 /* ===== متن معرفی فروشگاه (برای گوگل و بازدیدکننده) ===== */
 .abt{padding:18px 4px 0}
@@ -279,7 +280,7 @@ img{max-width:100%}
 </div>
 
 <div class="inv" id="inv"><div class="paper"><div id="paper"></div>
-<div class="acts" id="acts1"><button class="p" onclick="printInv()">🖨 چاپ فاکتور</button><button onclick="editCart()">✏️ ویرایش سبد خرید</button><button onclick="done()">بستن و سفارش جدید</button></div>
+<div class="acts" id="acts1"><button class="p" onclick="printInv()" style="flex:2">🖨 چاپ فاکتور</button><button onclick="done()" style="flex:1">بستن</button></div>
 <div class="acts" id="acts2" style="display:none"><button class="p" onclick="printInv()">🖨 چاپ فاکتور</button><button onclick="closeView()">→ بازگشت به سفارش‌ها</button></div></div></div>
 
 <!-- ورود / ثبت‌نام -->
@@ -332,7 +333,6 @@ img{max-width:100%}
 
 <script>
 // ===== اطلاعات مغازه: تولیدی و پخش پوشاک زنانه =====
-// شماره‌ها را با | از هم جدا کن؛ هر کدام در یک خط جدا نمایش داده می‌شود
 var S={name:'الماس',shop:'تولیدی الماس مرادی',address:'بازار بزرگ تهران بازار مسگرها کوچه خسروی پاساژ نیک پ1',phone:'علیرضا: 09331805391|پخش: 02155617531',hours:'9:00 الی 17:00',pay:'شماره کارت: 0000-0000-0000-0000|به نام: نام صاحب حساب'};
 function payLine(){return S.pay.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join(' · ')}
 // ===== اتصال به گوگل شیت (الزامی: ثبت‌نام و سفارش فقط با سرور کار می‌کند) =====
@@ -423,7 +423,8 @@ function drawMy(){
   return '<div class="mo"><div class="h"><b>فاکتور <bdi dir="ltr">'+esc(o.inv)+'</bdi></b><span class="bs '+s[1]+'">'+s[0]+'</span></div>'+
   '<div class="m">🕒 '+dt(o.date)+'</div><ul>'+li+'</ul><div class="t2">مبلغ کل: '+fa(o.total)+' تومان</div>'+
   '<div class="m">📍 '+esc(o.addr||'—')+'</div>'+
-  '<div class="bt"><button class="pr" data-i="'+esc(o.inv)+'" onclick="viewInv(this.dataset.i)">🧾 نمایش و چاپ فاکتور</button>'+(o.status==='ثبت شد'?'<button class="cn" data-i="'+esc(o.inv)+'" onclick="myCancel(this.dataset.i)">✕ لغو سفارش</button>':'')+'</div></div>'}).join(''):'<div class="empty">هنوز سفارشی ثبت نکرده‌اید.</div>';
+  '<div class="bt"><button class="pr" data-i="'+esc(o.inv)+'" onclick="viewInv(this.dataset.i)">🧾 نمایش و چاپ فاکتور</button>'+
+  (o.status==='ثبت شد'?'<button class="ed" data-i="'+esc(o.inv)+'" onclick="editOrder(this.dataset.i)">✏️ ویرایش سفارش</button><button class="cn" data-i="'+esc(o.inv)+'" onclick="myCancel(this.dataset.i)">✕ لغو سفارش</button>':'')+'</div></div>'}).join(''):'<div class="empty">هنوز سفارشی ثبت نکرده‌اید.</div>';
 }
 function myCancel(inv){
  if(!confirm('این سفارش لغو شود؟'))return;
@@ -432,6 +433,25 @@ function myCancel(inv){
   if(r.products)applyProducts(r.products);
   if(r.orders){MO=r.orders;drawMy()}
   if(!r.ok){alert(r.error||'لغو انجام نشد.');loadMy()}
+ }).catch(function(){alert('ارتباط با سرور برقرار نشد.')});
+}
+function editOrder(inv){
+ var o=MO.filter(function(x){return x.inv===inv})[0];if(!o)return;
+ if(!confirm('با ویرایش این سفارش، سفارش قبلی لغو شده و اقلام آن به سبد خرید شما اضافه می‌شوند تا مجدداً ثبت کنید. ادامه می‌دهید؟'))return;
+ api('cancel',{inv:inv,isEdit:true}).then(function(r){
+  if(authFail(r)){closeAcc();return}
+  if(!r.ok){alert(r.error||'ویرایش انجام نشد.');return}
+  if(r.products)applyProducts(r.products);
+  
+  // پر کردن سبد خرید با اقلام سفارش قبلی
+  cart = (o.det||[]).map(function(it){
+    for(var i=0;i<P.length;i++){ if(String(P[i].sid)===String(it.sid)) return {id:i,q:it.q}; }
+    return null;
+  }).filter(Boolean);
+  
+  MO=r.orders||MO;drawMy();
+  closeMy();
+  openCart();
  }).catch(function(){alert('ارتباط با سرور برقرار نشد.')});
 }
 function saveProf(){
@@ -536,7 +556,7 @@ function invNo(d){
 }
 // پیام یادآوری ارسال فیش (در هر دو حالت فاکتور نمایش داده می‌شود)
 var NOTE='<div class="note">⚠️ لطفاً بعد از واریز وجه، تصویر فیش واریزی را به آیدی‌های زیر ارسال کنید:<br>📱 تلگرام: <a href="https://t.me/Alireza_moradi2001" target="_blank" rel="noopener"><bdi dir="ltr">@Alireza_moradi2001</bdi></a><br>📱 روبیکا: <bdi dir="ltr">@alirezachap11</bdi></div>';
-var invHTML='',committed=false,curInv='';
+var invHTML='',committed=false,curInv='',editMode=false;
 function applyProducts(list){
  var keep=cart.map(function(c){return {sid:P[c.id]&&P[c.id].sid,q:c.q}});
  P=list.map(function(p,i){return {id:i,sid:p.sid,cat:p.cat,name:p.name,unit:p.unit,pack:p.pack,stock:p.stock,bg:p.bg,img:p.img||'',old:Number(p.old)||0,desc:p.desc||''}});
@@ -591,7 +611,7 @@ function invoice(){
  var dlv=pk?'تحویل حضوری':addr;
  var items=cart.map(function(c){return {sid:P[c.id].sid,q:c.q}});
  var sg=JSON.stringify(items);
- if(!pend||pend.sg!==sg){var d0=new Date();pend={sg:sg,d:d0,num:invNo(d0)}}
+ if(!pend||pend.sg!==sg){var d0=new Date();pend={sg:sg,d:d0,num:invNo(d0) + (editMode ? '-ED' : '')}}
  var num=pend.num,d=pend.d;
  setBusy(true);
  api('order',{inv:num,items:items,delivery:pk?'pickup':'address',address:addr}).then(function(r){
@@ -605,16 +625,7 @@ function invoice(){
 }
 // چاپ: همین صفحه چاپ می‌شود و با CSS (بخش @media print) فقط فاکتور دیده می‌شود
 function printInv(){window.print()}
-function editCart(){
- function back(){$('inv').classList.remove('show');openCart()}
- if(!committed){back();return}
- api('cancel',{inv:curInv}).then(function(r){
-  if(!r.ok){alert(r.error||'لغو سفارش انجام نشد.');return}
-  if(r.products)applyProducts(r.products);
-  committed=false;back();
- }).catch(function(){alert('ارتباط با سرور برقرار نشد. دوباره تلاش کن.')});
-}
-function done(){committed=false;curInv='';cart=[];upd();draw();$('inv').classList.remove('show')}
+function done(){committed=false;curInv='';editMode=false;cart=[];upd();draw();$('inv').classList.remove('show')}
 // بخش اطلاعات مغازه
 (function(){
  var tel=S.phone.split('|').map(function(t){t=t.trim();return /[0-9۰-۹]/.test(t)?'<a href="tel:'+t.replace(/[^0-9+]/g,'')+'">'+esc(t)+'</a>':esc(t)}).join('<br>');
