@@ -621,17 +621,36 @@ function done(){committed=false;curInv='';cart=[];upd();draw();$('inv').classLis
 $('shn').textContent=S.shop;
 hdr();
 $('grid').innerHTML='<p>در حال بارگذاری محصولات...</p>';nav();upd();loadProducts();
- // ===== دکمه‌ی بک مرورگر / گوشی: هر پنجره‌ی بازشو یک ورودی در تاریخچه دارد =====
+ // ===== دکمه‌ی بک + تأیید خروج از سایت =====
 (function(){
- var ids=['dr','pd','au','ac','mr','inv'],hd=0,skip=0;
+ var ids=['dr','pd','au','ac','mr','inv'],hd=0,skip=0,armed=false;
  function open(){return ids.filter(function(i){return $(i).classList.contains('show')})}
- // تعداد ورودی‌های تاریخچه را با تعداد پنجره‌های باز هماهنگ می‌کند
+
+ // پنجره‌ی تأیید خروج
+ var st=document.createElement('style');
+ st.textContent='.lv{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px}.lv.show{display:flex}.lvb{background:#fff;border-radius:16px;padding:22px;width:min(380px,100%);text-align:center}.lvb h3{margin:0 0 8px;font-size:19px}.lvb p{margin:0 0 16px;color:#475569;font-size:14px}.lva{display:flex;gap:10px}.lva button{flex:1;padding:11px;border-radius:10px;font-weight:600;cursor:pointer;border:0}.lvs{background:#2563eb;color:#fff}.lvx{background:#fee2e2;color:#991b1b}';
+ document.head.appendChild(st);
+ var m=document.createElement('div');m.className='lv';
+ m.innerHTML='<div class="lvb"><h3>خروج از سایت؟</h3><p id="lvt"></p><div class="lva"><button class="lvs" id="lvs">ماندن در سایت</button><button class="lvx" id="lvx">خروج</button></div></div>';
+ document.body.appendChild(m);
+ function showLv(){
+  $('lvt').textContent=cart.length?'سبد خرید شما هنوز ثبت نشده و با خروج خالی می‌شود. مطمئنید می‌خواهید از سایت خارج شوید؟':'آیا مطمئنید می‌خواهید از سایت الماس خارج شوید؟';
+  m.classList.add('show');
+ }
+ function hideLv(){m.classList.remove('show')}
+ $('lvs').onclick=hideLv;
+ $('lvx').onclick=function(){
+  skip++;history.go(-2);               // از ورودی نگهبان و ورودی پایه رد می‌شود
+  setTimeout(function(){skip=0;hideLv()},500); // اگر صفحه‌ی قبلی وجود نداشت
+ };
+
+ // هماهنگ‌کردن تاریخچه با تعداد پنجره‌های باز
  function sync(){
+  if(!armed)return;
   var n=open().length;
   while(hd<n){hd++;history.pushState({d:hd},'')}
   if(hd>n){var k=hd-n;hd=n;skip++;history.go(-k)}
  }
- // بالاترین پنجره‌ی باز را می‌بندد
  function closeTop(){
   var o=open();
   if(o.indexOf('inv')>-1){if($('acts2').style.display==='flex')closeView();else done()}
@@ -641,13 +660,33 @@ $('grid').innerHTML='<p>در حال بارگذاری محصولات...</p>';nav(
   else if(o.indexOf('pd')>-1)closeProd();
   else if(o.indexOf('dr')>-1)closeCart();
  }
+
  window.addEventListener('popstate',function(e){
+  if(!armed)return;
   if(skip>0){skip--;return}
-  var d=(e.state&&e.state.d)||0;
+  var d=(e.state&&typeof e.state.d==='number')?e.state.d:-1;
+  if(d<0){ // کاربر به ورودی پایه رسیده: یعنی می‌خواهد از سایت خارج شود
+   ids.forEach(function(i){$(i).classList.remove('show')});
+   document.body.style.overflow='';
+   hd=0;history.pushState({d:0},'');   // برگرداندن کاربر به صفحه‌ی اصلی
+   showLv();return;
+  }
   if(d<hd){hd=d;closeTop()}
   sync();
  });
- // هر بار پنجره‌ای باز یا بسته شد (با هر روشی) تاریخچه هماهنگ می‌شود
+
+ // مرورگرها ورودی‌های تاریخچه‌ای را که بدون تعامل کاربر ساخته شوند نادیده می‌گیرند،
+ // برای همین تنظیم اولیه با اولین لمس یا کلیک انجام می‌شود
+ function arm(){
+  if(armed)return;armed=true;
+  ['pointerdown','touchstart','keydown'].forEach(function(t){document.removeEventListener(t,arm,true)});
+  var s=history.state;
+  if(s&&typeof s.d==='number'){        // بعد از رفرش صفحه
+   if(s.d>0){skip++;history.go(-s.d)}else history.replaceState({d:0},'');
+  }else{history.replaceState({d:-1},'');history.pushState({d:0},'')}
+ }
+ ['pointerdown','touchstart','keydown'].forEach(function(t){document.addEventListener(t,arm,true)});
+
  var mo=new MutationObserver(sync);
  ids.forEach(function(i){mo.observe($(i),{attributes:true,attributeFilter:['class']})});
 })();
