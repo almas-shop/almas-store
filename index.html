@@ -535,7 +535,7 @@ function invNo(d){
  return t.replace(/\d/g,function(c){return '۰۱۲۳۴۵۶۷۸۹'[c]});
 }
 // پیام یادآوری ارسال فیش (در هر دو حالت فاکتور نمایش داده می‌شود)
-var NOTE='<div class="note">⚠️ لطفاً بعد از واریز وجه، تصویر فیش واریزی را به آیدی تلگرام یا روبیکا ارسال کنید.</div>';
+var NOTE='<div class="note">⚠️ لطفاً بعد از واریز وجه، تصویر فیش واریزی را به آیدی‌های زیر ارسال کنید:<br>📱 تلگرام: <a href="https://t.me/Alireza_moradi2001" target="_blank" rel="noopener"><bdi dir="ltr">@Alireza_moradi2001</bdi></a><br>📱 روبیکا: <bdi dir="ltr">@alirezachap11</bdi></div>';
 var invHTML='',committed=false,curInv='';
 function applyProducts(list){
  var keep=cart.map(function(c){return {sid:P[c.id]&&P[c.id].sid,q:c.q}});
