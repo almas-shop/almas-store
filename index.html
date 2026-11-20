@@ -437,24 +437,23 @@ function myCancel(inv){
 }
 function editOrder(inv){
  var o=MO.filter(function(x){return x.inv===inv})[0];if(!o)return;
- if(!confirm('با ویرایش این سفارش، سفارش قبلی لغو شده و اقلام آن به سبد خرید شما اضافه می‌شوند تا مجدداً ثبت کنید. ادامه می‌دهید؟'))return;
- api('cancel',{inv:inv,isEdit:true}).then(function(r){
-  if(authFail(r)){closeAcc();return}
-  if(!r.ok){alert(r.error||'ویرایش انجام نشد.');return}
-  if(r.products)applyProducts(r.products);
-  
-  // پر کردن سبد خرید با اقلام سفارش قبلی
-  cart = (o.det||[]).map(function(it){
-    for(var i=0;i<P.length;i++){ if(String(P[i].sid)===String(it.sid)) return {id:i,q:it.q}; }
-    return null;
-  }).filter(Boolean);
-  
-  MO=r.orders||MO;drawMy();
-  closeMy();
-  openCart();
- }).catch(function(){alert('ارتباط با سرور برقرار نشد.')});
+ if(!confirm('با ویرایش این سفارش، اقلام آن به سبد خرید شما اضافه می‌شوند. می‌توانید محصولات را تغییر دهید یا محصول جدیدی اضافه کنید. ادامه می‌دهید؟'))return;
+ 
+ // پر کردن سبد خرید با اقلام سفارش قبلی
+ cart = (o.det||[]).map(function(it){
+   for(var i=0;i<P.length;i++){ if(String(P[i].sid)===String(it.sid)) return {id:i,q:it.q}; }
+   return null;
+ }).filter(Boolean);
+ 
+ // ست کردن وضعیت ویرایش
+ editMode = true; 
+ curInv = o.inv; // ذخیره شماره فاکتور در حال ویرایش
+ 
+ upd(); // آپدیت کردن سبد خرید
+ closeMy(); // بستن صفحه سفارش‌های من
+ openCart(); // باز کردن سبد خرید
 }
-function saveProf(){
+ function saveProf(){
  var m=$('pam'),pk=$('ppk').checked,np=$('pnp').value;
  $('psv').disabled=true;m.className='am ok';m.textContent='در حال ذخیره...';
  api('updateProfile',{name:$('pn').value.trim(),address:$('pa').value.trim(),pickup:pk,newPass:np}).then(function(r){
@@ -611,19 +610,22 @@ function invoice(){
  var dlv=pk?'تحویل حضوری':addr;
  var items=cart.map(function(c){return {sid:P[c.id].sid,q:c.q}});
  var sg=JSON.stringify(items);
- if(!pend||pend.sg!==sg){var d0=new Date();pend={sg:sg,d:d0,num:invNo(d0) + (editMode ? '-ED' : '')}}
+ if(!pend||pend.sg!==sg){var d0=new Date();pend={sg:sg,d:d0,num:editMode ? curInv : invNo(d0)}}
  var num=pend.num,d=pend.d;
  setBusy(true);
- api('order',{inv:num,items:items,delivery:pk?'pickup':'address',address:addr}).then(function(r){
+ 
+ // اگر در حالت ویرایش بود، به سرور اطلاع می‌دهیم
+ api('order',{inv:num,items:items,delivery:pk?'pickup':'address',address:addr, isEdit: editMode}).then(function(r){
   setBusy(false);
   if(authFail(r)){closeCart();return}
   pend=null;
   if(r.products)applyProducts(r.products);
   if(!r.ok){alert(r.error||'ثبت سفارش انجام نشد.');return}
-  curInv=num;committed=true;buildInv(num,d,dlv);showInv();
+  curInv=num;committed=true;editMode=false;
+  buildInv(num,d,dlv);showInv();
  }).catch(function(){setBusy(false);alert('ارتباط با سرور برقرار نشد. اینترنت را بررسی کن و دوباره دکمه‌ی ثبت سفارش را بزن.')});
 }
-// چاپ: همین صفحه چاپ می‌شود و با CSS (بخش @media print) فقط فاکتور دیده می‌شود
+ // چاپ: همین صفحه چاپ می‌شود و با CSS (بخش @media print) فقط فاکتور دیده می‌شود
 function printInv(){window.print()}
 function done(){committed=false;curInv='';editMode=false;cart=[];upd();draw();$('inv').classList.remove('show')}
 // بخش اطلاعات مغازه
