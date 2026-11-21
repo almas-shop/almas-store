@@ -2,47 +2,86 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#2563eb">
 <title>مدیریت محصولات | الماس</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#eef4ff;color:#23254e;font-family:'Vazirmatn',Tahoma,sans-serif;line-height:1.6}
-.w{max-width:720px;margin:0 auto;padding:16px 14px 80px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+ --ink:#1e2347;--mut:#667085;--line:rgba(120,140,200,.22);
+ --gl:rgba(255,255,255,.55);--gl2:rgba(255,255,255,.78);--bd:rgba(255,255,255,.8);
+ --blur:blur(22px) saturate(180%);
+ --sh:0 8px 28px rgba(37,64,175,.12),inset 0 1px 0 rgba(255,255,255,.9);
+ --spring:cubic-bezier(.34,1.45,.5,1);--sab:env(safe-area-inset-bottom,0px)
+}
+html{background:#eaf0ff;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;color:var(--ink);font-family:'Vazirmatn',Tahoma,sans-serif;line-height:1.6}
+body::before{content:"";position:fixed;inset:0;z-index:-1;
+ background:radial-gradient(60vmax 60vmax at 90% -10%,#8fb4ff 0,transparent 60%),
+ radial-gradient(50vmax 50vmax at -10% 30%,#d5b8ff 0,transparent 60%),
+ radial-gradient(55vmax 55vmax at 80% 95%,#9fe3ff 0,transparent 60%),
+ radial-gradient(40vmax 40vmax at 10% 100%,#ffc9e3 0,transparent 60%),#eaf0ff}
+.w{max-width:720px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(80px + var(--sab))}
 h1{font-size:21px;margin:4px 0 12px}
-.c{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(30,64,175,.08)}
 label{display:block;font-size:14px;font-weight:600;margin:10px 0 4px}
-input,select,textarea{width:100%;font:inherit;padding:9px 10px;border:1px solid #d5dbe8;border-radius:10px;background:#fff}
+input,select,textarea{width:100%;font:inherit;color:inherit;padding:9px 10px;border:1px solid rgba(255,255,255,.95);border-radius:14px;background:rgba(255,255,255,.62);box-shadow:inset 0 1px 3px rgba(30,60,150,.08)}
 input:focus,select:focus,textarea:focus{outline:2px solid #2563eb}
 small{color:#81858b;font-weight:400}
+
+/* کارت شیشه‌ای */
+.c{background:var(--gl);border:1px solid var(--bd);border-radius:24px;padding:14px;margin-bottom:12px;box-shadow:var(--sh);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.b{border:0;border-radius:10px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer;background:#e0e9ff;color:#1e3a8a}
-.b.p{background:#2563eb;color:#fff}.b.d{background:#fee2e2;color:#991b1b}.b:disabled{opacity:.5}
+
+/* دکمه‌ها */
+.b{border:1px solid var(--bd);border-radius:14px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer;background:rgba(224,233,255,.85);color:#1e3a8a;transition:transform .3s var(--spring)}
+.b:active{transform:scale(.95)}
+.b.p{background:linear-gradient(180deg,#4f8cff,#2563eb);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(37,99,235,.35),inset 0 1px 0 rgba(255,255,255,.45)}
+.b.d{background:rgba(254,226,226,.9);color:#991b1b}
+.b:disabled{opacity:.5}
 .top{display:flex;gap:8px;margin-bottom:12px}.top input{flex:1}
-.it{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #eef0f5}
+
+/* لیست محصولات */
+.it{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .it:last-child{border:0}
-.th{width:56px;height:56px;border-radius:10px;background:#f1f2f4;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px}
+.th{width:56px;height:56px;border-radius:14px;background:#f1f2f4;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px}
 .th img{width:100%;height:100%;object-fit:cover}
 .in{flex:1;min-width:0}.in b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .in span{font-size:13px;color:#81858b}
-.sq{display:flex;align-items:center;gap:4px}.sq button{width:30px;height:30px;border:1px solid #d5dbe8;background:#fff;border-radius:8px;font-size:18px;cursor:pointer}
+.sq{display:flex;align-items:center;gap:4px}
+.sq button{width:30px;height:30px;border:1px solid var(--bd);background:rgba(255,255,255,.7);border-radius:10px;font-size:18px;cursor:pointer;transition:transform .3s var(--spring)}
+.sq button:active{transform:scale(.88)}
 .sq b{min-width:30px;text-align:center}.sq .z{color:#dc2626}
 .ac{display:flex;flex-direction:column;gap:4px}.ac .b{padding:4px 10px;font-size:13px}
 .pv{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.pv div{position:relative}.pv img{width:70px;height:70px;object-fit:cover;border-radius:10px;border:2px solid #d5dbe8;cursor:pointer}
+.pv div{position:relative}.pv img{width:70px;height:70px;object-fit:cover;border-radius:14px;border:2px solid var(--bd);cursor:pointer}
 .pv div.m img{border-color:#2563eb}
 .pv i{position:absolute;top:-6px;inset-inline-start:-6px;width:22px;height:22px;background:#dc2626;color:#fff;border-radius:50%;text-align:center;font-style:normal;font-size:14px;line-height:22px;cursor:pointer}
-#msg{margin:10px 0;padding:11px;border-radius:10px;display:none}
-#msg.ok{display:block;background:#dcfce7;color:#166534}#msg.er{display:block;background:#fee2e2;color:#991b1b}#msg.wt{display:block;background:#e0e9ff;color:#1e3a8a}
-.tabs{display:flex;gap:8px;margin-bottom:12px}
-.tabs button{flex:1;padding:11px 4px;border:0;border-radius:12px;background:#fff;font:inherit;font-weight:600;cursor:pointer;color:#1e3a8a;box-shadow:0 2px 10px rgba(30,64,175,.08)}
-.tabs button.on{background:#2563eb;color:#fff}
-.tabs i{font-style:normal;background:#f59e0b;color:#111;border-radius:10px;font-size:12px;padding:0 7px;margin-inline-start:6px}
+
+/* پیام */
+#msg{margin:10px 0;padding:11px;border-radius:16px;display:none;border:1px solid var(--bd);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+#msg.ok{display:block;background:rgba(220,252,231,.85);color:#166534;animation:pop .45s var(--spring)}
+#msg.er{display:block;background:rgba(254,226,226,.88);color:#991b1b;animation:pop .45s var(--spring)}
+#msg.wt{display:block;background:rgba(224,233,255,.88);color:#1e3a8a}
+
+/* تب‌ها: حباب شیشه‌ای که با حالت فنری جابه‌جا می‌شود */
+.tabs{position:relative;display:flex;padding:5px;margin-bottom:12px;border-radius:24px;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.85);box-shadow:0 10px 30px rgba(20,40,120,.15),inset 0 1px 0 rgba(255,255,255,.95);-webkit-backdrop-filter:blur(26px) saturate(200%);backdrop-filter:blur(26px) saturate(200%)}
+.bub{position:absolute;top:5px;bottom:5px;left:0;width:33%;z-index:0;pointer-events:none;transition:transform .6s var(--spring),width .4s}
+.bub i{display:block;height:100%;border-radius:19px;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.45));border:1px solid rgba(255,255,255,.95);box-shadow:0 4px 14px rgba(37,99,235,.22),inset 0 1px 1px #fff}
+.bub i.mv{animation:squish .6s}
+.tabs button{position:relative;z-index:1;flex:1;padding:10px 4px;border:0;border-radius:19px;background:none;font:inherit;font-weight:600;color:#334155;cursor:pointer;transition:color .3s,transform .3s var(--spring)}
+.tabs button:active{transform:scale(.94)}
+.tabs button.on{color:#2563eb}
+.tabs button i{font-style:normal;background:#f59e0b;color:#111;border-radius:10px;font-size:12px;padding:0 7px;margin-inline-start:6px}
+.pgi{animation:pgin .4s var(--spring)}
+
+/* فیلتر و سفارش‌ها */
 .fl{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.fl button{border:1px solid #d5dbe8;background:#fff;border-radius:20px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}
-.fl button.on{background:#e0e9ff;border-color:#2563eb;color:#1e3a8a;font-weight:600}
-.od{border:1px solid #e3e8f2;border-radius:14px;padding:12px;margin-bottom:10px;background:#fff;box-shadow:0 2px 10px rgba(30,64,175,.06)}
+.fl button{border:1px solid var(--bd);background:rgba(255,255,255,.6);border-radius:20px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer;transition:transform .3s var(--spring)}
+.fl button:active{transform:scale(.94)}
+.fl button.on{background:rgba(224,233,255,.95);border-color:#2563eb;color:#1e3a8a;font-weight:600}
+.od{border:1px solid var(--bd);border-radius:22px;padding:12px;margin-bottom:10px;background:linear-gradient(160deg,rgba(255,255,255,.82),rgba(255,255,255,.5));box-shadow:var(--sh)}
 .od .h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
 .od .nm{font-weight:800;font-size:16px}
 .od .ph{direction:ltr;text-align:right}.od .ph a{color:#2563eb;text-decoration:none}
@@ -51,17 +90,19 @@ small{color:#81858b;font-weight:400}
 .od .tt{font-weight:800;color:#16a34a}
 .s1,.s2,.s3{padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
 .s1{background:#fef3c7;color:#92400e}.s2{background:#dcfce7;color:#166534}.s3{background:#fee2e2;color:#991b1b}
-.od .a2{display:flex;gap:8px;margin-top:10px}.od .a2 .b{flex:1}
+.od .a2{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.od .a2 .b{flex:1;min-width:120px}
 .od .ad{font-size:14px;margin-top:4px}
-.od .pwr{font-size:14px;margin-top:4px}.od .pwr b{background:#f1f2f4;border-radius:6px;padding:1px 8px;direction:ltr;display:inline-block;user-select:all}
+.od .pwr{font-size:14px;margin-top:4px}.od .pwr b{background:rgba(241,242,244,.9);border-radius:8px;padding:1px 8px;direction:ltr;display:inline-block;user-select:all}
 .lock{max-width:380px;margin:60px auto 0;text-align:center}
 .lock h1{margin-bottom:6px}
-.od .a2{flex-wrap:wrap}.od .a2 .b{min-width:120px}
-.inv{position:fixed;inset:0;z-index:20;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.55);overflow:auto;padding:20px}
-.inv.show{display:flex}
-.paper{background:#fff;width:min(760px,100%);border-radius:12px;padding:28px}
+
+/* فاکتور */
+.inv{position:fixed;inset:0;z-index:20;display:none;align-items:flex-start;justify-content:center;background:rgba(15,23,60,.3);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);overflow:auto;padding:20px}
+.inv.show{display:flex;animation:fadeIn .25s}
+.paper{background:rgba(255,255,255,.94);width:min(760px,100%);border:1px solid var(--bd);border-radius:26px;padding:28px;box-shadow:0 20px 60px rgba(15,23,80,.25)}
+.inv.show .paper{animation:sheet .5s var(--spring)}
 .acts{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
-.acts button{flex:1;min-width:130px;padding:11px;border-radius:10px;border:1px solid #e0e0e6;background:#fff;cursor:pointer;font:inherit}
+.acts button{flex:1;min-width:130px;padding:11px;border-radius:14px;border:1px solid #e0e0e6;background:#fff;cursor:pointer;font:inherit}
 .acts .p{background:#2563eb;border-color:#2563eb;color:#fff}
 #paper .meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 24px;color:#81858b;font-size:14px;margin:8px 0 12px;border-bottom:2px solid #2563eb;padding-bottom:10px}
 #paper .sh{font-size:13px;color:#81858b;margin-bottom:10px;line-height:2}
@@ -74,11 +115,21 @@ small{color:#81858b;font-weight:400}
 #paper .sum{margin-top:16px;margin-inline-start:auto;width:min(320px,100%);font-size:15px}
 #paper .sum div{display:flex;justify-content:space-between;gap:20px;padding:5px 0}
 #paper .sum .g{display:flex;font-weight:800;font-size:18px;color:#2563eb;border-top:2px solid #2563eb;margin-top:6px;padding-top:8px}
+
+/* انیمیشن‌ها */
+@keyframes fadeIn{from{opacity:0}}
+@keyframes sheet{from{opacity:0;transform:translateY(40px) scale(.94)}}
+@keyframes pop{from{opacity:0;transform:scale(.92)}}
+@keyframes pgin{from{opacity:0;transform:translateY(14px)}}
+@keyframes squish{0%{transform:scale(1)}35%{transform:scale(1.14,.84)}70%{transform:scale(.97,1.06)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
 @media print{
  body>*:not(#inv){display:none!important}
  html,body{background:#fff!important;height:auto!important;overflow:visible!important}
- #inv{position:static!important;display:block!important;background:none!important;padding:0!important;overflow:visible!important}
- .paper{width:100%!important;border-radius:0!important;padding:0!important}
+ body::before{display:none!important}
+ #inv{position:static!important;display:block!important;background:none!important;padding:0!important;overflow:visible!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+ .paper{width:100%!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;animation:none!important}
  .acts{display:none!important}
  #paper th{background:#f1f2f4!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
@@ -102,7 +153,7 @@ small{color:#81858b;font-weight:400}
 <label>توکن گیت‌هاب <small>(برای آپلود عکس)</small></label><input id="tk" type="password" autocomplete="off">
 <button class="b d" style="margin-top:10px" onclick="logout()">خروج از پنل</button>
 </details>
-<div class="tabs"><button id="t1" class="on" onclick="tab(1)">📦 محصولات</button><button id="t2" onclick="tab(2)">🧾 سفارش‌ها<i id="pc" style="display:none"></i></button><button id="t3" onclick="tab(3)">👥 مشتریان</button></div>
+<div class="tabs"><span class="bub" id="bub"><i></i></span><button id="t1" class="on" onclick="tab(1)">📦 محصولات</button><button id="t2" onclick="tab(2)">🧾 سفارش‌ها<i id="pc" style="display:none"></i></button><button id="t3" onclick="tab(3)">👥 مشتریان</button></div>
 <div id="pg1">
 
 <div class="c" id="fm" style="display:none">
@@ -159,12 +210,13 @@ small{color:#81858b;font-weight:400}
 var API_URL='https://script.google.com/macros/s/AKfycbzDaU9fI0kofUfbbS2XQ1XUlabiY32t3av2BaZtGIRZbaM3CzxS1msET6d9X1KroEtT/exec';
 var REPO='almas-shop/almas-store';
 var COLORS=['#e8f0ff','#eaf7ee','#f3eaff','#fff1e6','#fdeaf4','#e9f5f7','#ffeaea','#fdf3e1'];
-var P=[],cur=null,keep=[],PW='';
+var P=[],cur=null,keep=[],PW='',ct=1;
 // اطلاعات مغازه برای فاکتور (باید با index.html یکسان باشد)
 var S={name:'الماس',address:'بازار بزرگ تهران بازار مسگرها کوچه خسروی پاساژ نیک پ1',phone:'علیرضا: 09331805391|پخش: 02155617531',hours:'9:00 الی 17:00',pay:'شماره کارت: 0000-0000-0000-0000|به نام: نام صاحب حساب'};
 function $(i){return document.getElementById(i)}
 function fa(x){return Math.round(x).toLocaleString('fa-IR')}
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function bdi(t){return '<bdi dir="ltr">'+esc(String(t).trim())+'</bdi>'}
 function msg(t,c){var m=$('msg');m.className=c||'';m.textContent=t||''}
 function nd(s){return String(s).replace(/[۰-۹]/g,function(c){return c.charCodeAt(0)-1776}).replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632})}
 try{$('tk').value=localStorage.getItem('atk')||''}catch(e){}
@@ -181,6 +233,7 @@ function unlock(auto){
  api('adminLogin',{}).then(function(){
   try{localStorage.setItem('apw',p)}catch(e){}
   $('pw').value='';$('lock').style.display='none';$('app').style.display='block';msg('');
+  moveBub(ct,true);
   load();loadO(true);loadC(true);
  }).catch(function(e){
   PW='';$('lock').style.display='block';$('app').style.display='none';
@@ -268,11 +321,21 @@ var O=[],ofl='pending';
 var ST={'ثبت شد':['در انتظار تایید','s1','pending'],'تایید نهایی':['تایید نهایی شده','s2','done'],'ارسال شد':['ارسال شده','s2','shipped'],'لغو شد':['لغو شده','s3','cancel']};
 function sk(o){return (ST[o.status]||['','s1','pending'])[2]}
 function dt(iso){var d=new Date(iso);if(isNaN(d))return String(iso);return d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}
+// ===== تب‌ها (حباب شیشه‌ای با حالت فنری) =====
+function moveBub(n,inst){
+ var b=$('t'+n),u=$('bub');
+ if(inst)u.style.transition='none';
+ u.style.width=b.offsetWidth+'px';u.style.transform='translateX('+b.offsetLeft+'px)';
+ if(inst){void u.offsetWidth;u.style.transition=''}
+ else{var i=u.firstElementChild;i.classList.remove('mv');void i.offsetWidth;i.classList.add('mv')}
+}
 function tab(n){
- $('pg1').style.display=n===1?'block':'none';$('pg2').style.display=n===2?'block':'none';$('pg3').style.display=n===3?'block':'none';
- $('t1').className=n===1?'on':'';$('t2').className=n===2?'on':'';$('t3').className=n===3?'on':'';msg('');
+ for(var i=1;i<=3;i++){$('pg'+i).style.display=i===n?'block':'none';$('t'+i).className=i===n?'on':''}
+ var pg=$('pg'+n);pg.classList.remove('pgi');void pg.offsetWidth;pg.classList.add('pgi');
+ if(n!==ct)moveBub(n);ct=n;msg('');
  if(n===2)loadO();if(n===3)loadC();
 }
+window.addEventListener('resize',function(){if($('app').style.display!=='none')moveBub(ct,true)});
 function setF(f){ofl=f;drawO()}
 function loadO(quiet){
  api('listOrders',{}).then(function(r){O=r.orders||[];drawO()}).catch(function(e){if(!quiet){$('ol').textContent='';msg(e.message,'er')}});
@@ -283,12 +346,12 @@ function ocard(o){
  var tel=nd(String(o.phone).replace(/[^0-9+۰-۹٠-٩]/g,''));
  function ab(a,t,c){return '<button class="b '+c+'" data-a="'+a+'" data-i="'+esc(o.inv)+'" onclick="oa(this.dataset.a,this.dataset.i)">'+t+'</button>'}
  var btn='';
-  if(k==='pending')btn+=ab('confirmOrder','✓ تایید نهایی','p');
-  if(k==='done')btn+=ab('shipOrder','🚚 ارسال شد','p');
-  // 👇 دکمه لغو فقط برای سفارش‌هایی نمایش داده می‌شود که هنوز ارسال نشده‌اند
-  if(k!=='cancel' && k!=='shipped')btn+=ab('cancelOrder','✕ لغو سفارش','d');
+ if(k==='pending')btn+=ab('confirmOrder','✓ تایید نهایی','p');
+ if(k==='done')btn+=ab('shipOrder','🚚 ارسال شد','p');
+ // دکمه لغو فقط برای سفارش‌هایی نمایش داده می‌شود که هنوز ارسال نشده‌اند
+ if(k!=='cancel'&&k!=='shipped')btn+=ab('cancelOrder','✕ لغو سفارش','d');
  return '<div class="od"><div class="h"><div><div class="nm">'+esc(o.name||'—')+'</div><div class="ph"><a href="tel:'+esc(tel)+'">'+esc(o.phone||'—')+'</a></div></div><span class="'+s[1]+'">'+s[0]+'</span></div>'+
- '<div class="meta">🕒 '+dt(o.date)+' · فاکتور <bdi dir="ltr">'+esc(o.inv)+'</bdi></div>'+
+ '<div class="meta">🕒 '+dt(o.date)+' · فاکتور '+bdi(o.inv)+'</div>'+
  '<div class="ad">📍 '+esc(o.addr||'—')+'</div>'+
  '<ul>'+items+'</ul><div class="tt">مبلغ کل: '+fa(o.total)+' تومان</div>'+
  '<div class="a2"><button class="b" data-i="'+esc(o.inv)+'" onclick="showInv(this.dataset.i)">🧾 نمایش و چاپ فاکتور</button>'+btn+'</div></div>';
@@ -318,10 +381,10 @@ function oa(a,inv){
  }).catch(function(e){msg(e.message,'er');window.scrollTo(0,0);loadO()});
 }
 // ===== نمایش و چاپ فاکتور =====
-function payLine(){return S.pay.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join(' · ')}
+function payLine(){return S.pay.split('|').map(bdi).join(' · ')}
 function showInv(inv){
  var o=O.filter(function(x){return x.inv===inv})[0];if(!o)return;
- var rows='',pieces=0,packs=0,d=new Date(o.date);
+ var rows='',pieces=0,packs=0;
  (o.det||[]).forEach(function(it,i){
   var p=P.filter(function(x){return String(x.sid)===String(it.sid)})[0]||{};
   var nm=it.n||p.name||'—',u=it.u!==undefined?it.u:(p.unit||0),pk=it.pk!==undefined?it.pk:(p.pack||0);
@@ -329,8 +392,8 @@ function showInv(inv){
   rows+='<tr><td>'+fa(i+1)+'</td><td>'+esc(nm)+'</td><td>'+fa(it.q)+'</td><td>'+fa(pk)+'</td><td>'+fa(u)+'</td><td>'+fa(u*pk*it.q)+'</td></tr>'});
  if(!rows)rows='<tr><td colspan="6">'+esc(o.items)+'</td></tr>';
  $('paper').innerHTML='<h2 style="margin:0;color:#2563eb">💎 '+esc(S.name)+' <small style="font-size:14px;color:#81858b">عمده‌فروشی پوشاک زنانه</small></h2>'+
- '<div class="meta"><span>فاکتور فروش شماره <bdi dir="ltr">'+esc(o.inv)+'</bdi></span><span>تاریخ: '+(isNaN(d)?esc(o.date):d.toLocaleDateString('fa-IR')+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}))+'</span></div>'+
- '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(function(t){return '<bdi dir="ltr">'+esc(t.trim())+'</bdi>'}).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'<br>واریز وجه: '+payLine()+'</div>'+
+ '<div class="meta"><span>فاکتور فروش شماره '+bdi(o.inv)+'</span><span>تاریخ: '+esc(dt(o.date))+'</span></div>'+
+ '<div class="sh">آدرس: '+esc(S.address)+'<br>تلفن: '+S.phone.split('|').map(bdi).join('<br>')+'<br>ساعت کاری: '+esc(S.hours)+'<br>واریز وجه: '+payLine()+'</div>'+
  '<div class="by">خریدار: <b>'+esc(o.name||'—')+'</b> · تلفن: '+esc(o.phone||'—')+'<br>نحوه‌ی تحویل: '+esc(o.addr||'—')+'<br>وضعیت: '+esc((ST[o.status]||[o.status])[0])+'</div>'+
  '<div class="tw"><table><thead><tr><th>ردیف</th><th>شرح کالا</th><th>تعداد پک</th><th>تعداد در پک</th><th>قیمت هر عدد</th><th>مبلغ</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
  '<div class="sum"><div><span>جمع پک‌ها</span><span>'+fa(packs)+'</span></div><div><span>جمع کل تعداد (عدد)</span><span>'+fa(pieces)+'</span></div><div class="g"><span>مبلغ قابل پرداخت</span><span>'+fa(o.total)+' تومان</span></div></div>';
