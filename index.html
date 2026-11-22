@@ -3,6 +3,12 @@
 <head>
 <meta name="google-site-verification" content="kz1ONtNidzvAQtZD3Y7Gx2ZpPou0bhJBvbl7ToNRrUQ" />
 <meta charset="utf-8">
+<!-- === تغییر یافته: تنظیم تم قبل از رسم صفحه (جلوگیری از چشمک سفید) === -->
+<script>
+(function(){var t=null;try{t=localStorage.getItem('almasTheme')}catch(e){}
+if(!t)t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>الماس مرادی | عمده‌فروشی لباس زنانه</title>
 <meta name="description" content="فروشگاه الماس، مدیریت مرادی. عمده‌فروشی مانتو، شلوار، شومیز، بافت و کت زنانه به‌صورت پک. بازار بزرگ تهران، بازار مسگرها.">
@@ -259,6 +265,15 @@ footer{background:var(--gl);margin:12px;padding:14px 0;border:1px solid var(--bd
 #t-cart.pop svg{animation:roll .6s}
 #t-acct.pop svg{animation:bnc .6s}
 
+/* === تغییر یافته: اسکلت لودینگ === */
+/* ================= اسکلت لودینگ ================= */
+.sk{pointer-events:none;cursor:default}
+.sk .im,.sk .l1,.sk .l2,.sk .l3{background:linear-gradient(90deg,rgba(140,155,205,.16) 25%,rgba(255,255,255,.75) 50%,rgba(140,155,205,.16) 75%);background-size:200% 100%;animation:shim 1.3s linear infinite}
+.sk .l1{height:14px;margin:12px 12px 6px;border-radius:8px}
+.sk .l2{height:14px;width:60%;margin:0 12px 6px;border-radius:8px}
+.sk .l3{height:12px;width:40%;margin:4px 12px 14px;border-radius:8px}
+@keyframes shim{to{background-position:-200% 0}}
+
 /* ================= انیمیشن‌ها ================= */
 @keyframes fadeIn{from{opacity:0}}
 @keyframes sheet{from{opacity:0;transform:translateY(40px) scale(.94)}}
@@ -268,7 +283,7 @@ footer{background:var(--gl);margin:12px;padding:14px 0;border:1px solid var(--bd
 @keyframes wig{0%,100%{transform:rotate(0)}20%{transform:rotate(-14deg)}45%{transform:rotate(11deg)}70%{transform:rotate(-6deg)}}
 @keyframes roll{0%,100%{transform:translateX(0) rotate(0)}30%{transform:translateX(-6px) rotate(-8deg)}60%{transform:translateX(4px) rotate(5deg)}}
 @keyframes bnc{0%,100%{transform:scale(1)}25%{transform:scale(.78)}55%{transform:scale(1.22)}80%{transform:scale(.95)}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.sk .im,.sk .l1,.sk .l2,.sk .l3{animation:none!important}}
 
 /* ================= موبایل ================= */
 @media(max-width:760px){.pdg{grid-template-columns:minmax(0,1fr)}.mn{max-height:60vh}}
@@ -283,6 +298,58 @@ footer{background:var(--gl);margin:12px;padding:14px 0;border:1px solid var(--bd
  .brand b{font-size:19px}
  .sb input,.df input,.df textarea,.au input,.au textarea{font-size:16px}
 }
+
+/* === تغییر یافته: دکمه‌ی تم + حالت تاریک (باید قبل از @media print باشد) === */
+/* ================= دکمه‌ی تم ================= */
+.tg{margin-inline-start:auto;width:40px;height:40px;border-radius:14px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.2);color:#fff;font-size:19px;cursor:pointer;transition:transform .3s var(--spring)}
+.tg:active{transform:scale(.88)}
+
+/* ================= حالت تاریک ================= */
+html[data-theme=dark]{
+ color-scheme:dark;background:#0b1020;
+ --red:#4f86f7;--ink:#e8ecff;--mut:#9aa4c7;--line:rgba(160,175,230,.18);
+ --gl:rgba(28,34,64,.55);--gl2:rgba(30,37,70,.8);--bd:rgba(255,255,255,.12);
+ --sh:0 8px 28px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06)
+}
+html[data-theme=dark] body::before{
+ background:radial-gradient(60vmax 60vmax at 90% -10%,#1d3a8a 0,transparent 60%),
+ radial-gradient(50vmax 50vmax at -10% 30%,#4c2a8a 0,transparent 60%),
+ radial-gradient(55vmax 55vmax at 80% 95%,#0e5a73 0,transparent 60%),
+ radial-gradient(40vmax 40vmax at 10% 100%,#7a2a58 0,transparent 60%),#0b1020}
+html[data-theme=dark] .hd{background:linear-gradient(90deg,rgba(23,42,110,.88),rgba(37,70,150,.72))}
+html[data-theme=dark] ::placeholder{color:#7f89b0}
+
+/* کارت‌ها و ورودی‌ها */
+html[data-theme=dark] .card{background:linear-gradient(160deg,rgba(44,52,92,.8),rgba(28,34,64,.55))}
+html[data-theme=dark] .im::after,html[data-theme=dark] .mn::after{content:"";position:absolute;inset:0;background:rgba(10,14,32,.3);pointer-events:none}
+html[data-theme=dark] .dc,html[data-theme=dark] .so{z-index:1}
+html[data-theme=dark] .df input,html[data-theme=dark] .df textarea,html[data-theme=dark] .au input:not([type=checkbox]),html[data-theme=dark] .au textarea{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.16)}
+html[data-theme=dark] .st,html[data-theme=dark] .q button,html[data-theme=dark] .th{background:rgba(255,255,255,.08)}
+html[data-theme=dark] .sty.on i{box-shadow:0 0 0 3px rgba(245,158,11,.4),var(--sh)}
+html[data-theme=dark] .pz,html[data-theme=dark] .box .g{color:#4ade80}
+html[data-theme=dark] .ds,html[data-theme=dark] .lvb p{color:#b6c0e0}
+html[data-theme=dark] .tab{color:#c3cbe8}
+html[data-theme=dark] .tab.on{color:#8db0ff}
+html[data-theme=dark] .tab.on svg{fill:rgba(141,176,255,.2)}
+html[data-theme=dark] .tab b{border-color:#1a2040}
+html[data-theme=dark] .dock{background:rgba(20,26,52,.6);border-color:rgba(255,255,255,.14);box-shadow:0 14px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.08)}
+html[data-theme=dark] .bub i{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06));border-color:rgba(255,255,255,.2);box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 1px 1px rgba(255,255,255,.15)}
+html[data-theme=dark] .pd::before{background:rgba(10,14,32,.78)}
+
+/* برچسب‌ها و دکمه‌ها */
+html[data-theme=dark] .bd .ok,html[data-theme=dark] .bs2,html[data-theme=dark] .am.ok{background:rgba(34,197,94,.18);color:#86efac}
+html[data-theme=dark] .bd .no,html[data-theme=dark] .bs3,html[data-theme=dark] .am.er,html[data-theme=dark] .mo .cn,html[data-theme=dark] .lvx,html[data-theme=dark] .au .go.o{background:rgba(239,68,68,.2);color:#fca5a5}
+html[data-theme=dark] .bs1{background:rgba(245,158,11,.2);color:#fcd34d}
+html[data-theme=dark] .edn{color:#fcd34d}
+html[data-theme=dark] .edn button{background:rgba(255,255,255,.12)}
+html[data-theme=dark] .mo{background:rgba(255,255,255,.06)}
+html[data-theme=dark] .mo .pr,html[data-theme=dark] .mo .ed{background:rgba(79,134,247,.2);color:#bcd0ff}
+html[data-theme=dark] .tb button{background:rgba(255,255,255,.08);color:#bcd0ff}
+html[data-theme=dark] .tb button.on{background:var(--red);color:#fff}
+html[data-theme=dark] .sk .im,html[data-theme=dark] .sk .l1,html[data-theme=dark] .sk .l2,html[data-theme=dark] .sk .l3{background:linear-gradient(90deg,rgba(255,255,255,.06) 25%,rgba(255,255,255,.16) 50%,rgba(255,255,255,.06) 75%);background-size:200% 100%}
+
+/* فاکتور همیشه روشن می‌ماند (خوانایی و چاپ) */
+html[data-theme=dark] .paper{--ink:#1e2347;--mut:#667085;--red:#2563eb;--line:rgba(120,140,200,.22);color:#1e2347}
 
 /* ================= چاپ فاکتور (فقط فاکتور چاپ می‌شود) ================= */
 @media print{
@@ -299,6 +366,8 @@ footer{background:var(--gl);margin:12px;padding:14px 0;border:1px solid var(--bd
 <body>
 <header class="hd"><div class="wrap hdi">
 <div class="brand"><span class="lg">💎</span><div><b>الماس</b><small>عمده‌فروشی پوشاک زنانه</small></div></div>
+<!-- === تغییر یافته: دکمه‌ی تم === -->
+<button class="tg" id="thm" onclick="toggleTheme()" aria-label="تغییر تم">🌙</button>
 </div></header>
 <div class="shop"><div class="wrap shi"><div class="av">💎</div><div><b id="shn"></b><small>مدیریت: مرادی · فروش به‌صورت پک</small></div></div></div>
 <div class="wrap">
@@ -426,6 +495,25 @@ function ph(p,src){var em=E[p.cat]||'🛍';return src?'<img src="images/'+src+'"
 function pic(p){return ph(p,imgs(p)[0])}
 function lowStock(){return 'موجودی کافی نیست.'}
 
+// === تغییر یافته: توابع اسکلت لودینگ + تم ===
+// اسکلت لودینگ
+function skel(n){var h='';for(var i=0;i<n;i++)h+='<div class="card sk"><div class="im"></div><div class="l1"></div><div class="l2"></div><div class="l3"></div></div>';return h}
+function skelO(){var h='';for(var i=0;i<3;i++)h+='<div class="mo sk"><div class="l1"></div><div class="l2"></div><div class="l3"></div></div>';return h}
+
+// ===== تم روشن / تاریک =====
+function setTheme(t,save){
+ document.documentElement.setAttribute('data-theme',t);
+ if(save){try{localStorage.setItem('almasTheme',t)}catch(e){}}
+ var b=$('thm');if(b)b.textContent=t==='dark'?'☀️':'🌙';
+ var m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==='dark'?'#0b1020':'#2563eb';
+}
+function toggleTheme(){setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark',true)}
+// اگر کاربر دستی انتخاب نکرده، با تغییر تم گوشی هماهنگ شود
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(e){
+ var saved=null;try{saved=localStorage.getItem('almasTheme')}catch(x){}
+ if(!saved)setTheme(e.matches?'dark':'light');
+})}catch(e){}
+
 // ===== حساب کاربری =====
 try{var su=JSON.parse(localStorage.getItem('almasUser')||'null');if(su&&su.user&&su.pass)U={user:su.user,pass:su.pass,name:'',phone:'',addr:''}}catch(e){}
 function saveU(){try{if(U)localStorage.setItem('almasUser',JSON.stringify({user:U.user,pass:U.pass}));else localStorage.removeItem('almasUser')}catch(e){}}
@@ -479,7 +567,8 @@ function closeAcc(){$('ac').classList.remove('show');$('mr').classList.remove('s
 function openMy(){if(!U){openAuth();return}$('mr').classList.add('show');loadMy()}
 function closeMy(){$('mr').classList.remove('show')}
 function loadMy(){
- $('mo').textContent='در حال بارگذاری...';
+ // === تغییر یافته: اسکلت لودینگ به جای متن ===
+ $('mo').innerHTML=skelO();
  api('myOrders',{}).then(function(r){
   if(authFail(r)){closeAcc();return}
   if(!r.ok){$('mo').textContent=r.error||'خطا';return}
@@ -747,9 +836,11 @@ function tab(t){
 })();
 
 // ===== شروع =====
+// === تغییر یافته: تنظیم تم قبل از هدر + اسکلت لودینگ ===
+setTheme(document.documentElement.getAttribute('data-theme')||'light');
 $('shn').textContent=S.shop;
 hdr();
-$('grid').innerHTML='<p>در حال بارگذاری محصولات...</p>';nav();upd();loadProducts();syncTab();
+$('grid').innerHTML=skel(8);nav();upd();loadProducts();syncTab();
 
 // ===== دکمه‌ی بک + تأیید خروج از سایت =====
 (function(){
