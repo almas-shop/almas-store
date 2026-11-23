@@ -259,7 +259,8 @@ footer{background:var(--gl);margin:12px;padding:14px 0;border:1px solid var(--bd
 .tab.on svg{fill:rgba(37,99,235,.16)}
 .tab .lb{max-width:100%;padding:0 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tab b{position:absolute;top:5px;left:calc(50% + 2px);min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#f59e0b;color:#111;border:2px solid #fff;font-size:11px;font-weight:800;line-height:14px;text-align:center;transition:transform .15s}
-/* انیمیشن مخصوص هر آیکون هنگام انتخاب (مثل تلگرام iOS) */
+#n{min-width:14px;width:14px;height:14px;padding:0;top:8px;border-radius:50%}
+ /* انیمیشن مخصوص هر آیکون هنگام انتخاب (مثل تلگرام iOS) */
 #t-home.pop svg{animation:hop .6s}
 #t-orders.pop svg{animation:wig .6s}
 #t-cart.pop svg{animation:roll .6s}
@@ -273,7 +274,11 @@ footer{background:var(--gl);margin:12px;padding:14px 0;border:1px solid var(--bd
 .sk .l2{height:14px;width:60%;margin:0 12px 6px;border-radius:8px}
 .sk .l3{height:12px;width:40%;margin:4px 12px 14px;border-radius:8px}
 @keyframes shim{to{background-position:-200% 0}}
-
+.toast{position:fixed;z-index:60;left:50%;top:calc(14px + var(--sat));transform:translate(-50%,-20px);opacity:0;pointer-events:none;
+ max-width:min(440px,calc(100% - 24px));padding:11px 18px;border-radius:18px;font-weight:600;font-size:14px;text-align:center;
+ background:rgba(22,163,74,.95);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:opacity .25s,transform .35s var(--spring)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+ 
 /* ================= انیمیشن‌ها ================= */
 @keyframes fadeIn{from{opacity:0}}
 @keyframes sheet{from{opacity:0;transform:translateY(40px) scale(.94)}}
@@ -364,6 +369,7 @@ html[data-theme=dark] .paper{--ink:#1e2347;--mut:#667085;--red:#2563eb;--line:rg
 </style>
 </head>
 <body>
+ <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <header class="hd"><div class="wrap hdi">
 <div class="brand"><span class="lg">💎</span><div><b>الماس</b><small>عمده‌فروشی پوشاک زنانه</small></div></div>
 <!-- === تغییر یافته: دکمه‌ی تم === -->
@@ -413,14 +419,14 @@ html[data-theme=dark] .paper{--ink:#1e2347;--mut:#667085;--red:#2563eb;--line:rg
 <h3>💎 حساب کاربری الماس</h3>
 <div class="tb"><button id="lt" class="on" onclick="authTab('l')">ورود</button><button id="rt" onclick="authTab('r')">ثبت‌نام</button></div>
 <div id="lf">
-<label class="l">نام کاربری یا شماره همراه</label><input id="lu" dir="ltr" autocomplete="username">
+<label class="l">شماره همراه</label><input id="lu" dir="ltr" inputmode="numeric" autocomplete="username">
 <label class="l">رمز عبور</label><input id="lp" type="password" dir="ltr" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
 <button class="go" id="lgo" onclick="doLogin()">ورود</button>
 </div>
 <div id="rf" style="display:none">
 <label class="l">نام و نام خانوادگی / نام فروشگاه</label><input id="rn">
-<label class="l">نام کاربری <small>(حداقل ۳ حرف، بدون فاصله)</small></label><input id="ru" dir="ltr" autocomplete="username">
-<label class="l">شماره همراه</label><input id="rph" dir="ltr" inputmode="numeric" placeholder="09123456789" autocomplete="tel">
+
+<label class="l">شماره همراه</label><input id="rph" dir="ltr" inputmode="numeric" placeholder="09123456789" autocomplete="username">
 <label class="l">رمز عبور <small>(حداقل ۴ کاراکتر)</small></label><input id="rp" type="password" dir="ltr" autocomplete="new-password">
 <label class="l">تکرار رمز عبور</label><input id="rp2" type="password" dir="ltr" autocomplete="new-password">
 <label class="l">آدرس</label><textarea id="ra" rows="2" placeholder="آدرس کامل"></textarea>
@@ -493,7 +499,11 @@ function dt(iso){var d=new Date(iso);if(isNaN(d))return String(iso);return d.toL
 function imgs(p){return String(p.img||'').split(',').map(function(x){return x.trim()}).filter(function(x){return /^[\w.\-]+$/.test(x)})}
 function ph(p,src){var em=E[p.cat]||'🛍';return src?'<img src="images/'+src+'" alt="" loading="lazy" onerror="this.outerHTML=\''+em+'\'">':em}
 function pic(p){return ph(p,imgs(p)[0])}
-function lowStock(){return 'موجودی کافی نیست.'}
+function lowStock(){return 'موجودی کافی نیست.'}var toastT;
+function toast(t){
+ var e=$('toast');e.textContent=t;e.classList.add('show');
+ clearTimeout(toastT);toastT=setTimeout(function(){e.classList.remove('show')},2000);
+}
 
 // === تغییر یافته: توابع اسکلت لودینگ + تم ===
 // اسکلت لودینگ
@@ -546,7 +556,7 @@ function doReg(){
  if($('rn').value.trim().length<2)return authMsg('نام را وارد کن.');
  if(p!==$('rp2').value)return authMsg('رمز عبور و تکرار آن یکسان نیست.');
  $('rgo').disabled=true;authMsg('در حال ثبت‌نام...','ok');
- api('register',{username:$('ru').value.trim(),password:p,phone:$('rph').value,name:$('rn').value.trim(),address:$('ra').value.trim(),pickup:pk}).then(function(r){
+ api('register',{password:p,phone:$('rph').value,name:$('rn').value.trim(),address:$('ra').value.trim(),pickup:pk}).then(function(r){
   if(!r.ok){authMsg(r.error||'ثبت‌نام انجام نشد.');return}
   setU(r.user,p);closeAuth();
  }).catch(function(){authMsg('ارتباط با سرور برقرار نشد.')}).then(function(){$('rgo').disabled=false});
@@ -665,8 +675,10 @@ function renderProd(){
 }
 function pqc(d){var av=P[cur].stock-inCart(cur);pq=Math.max(1,Math.min(Math.max(av,1),pq+d));$('pqv').textContent=fa(pq)}
 function addProd(){
- if(!add(cur,pq))return;
- pq=1;var b=$('adb');b.textContent='✓ به سبد اضافه شد';
+ var n=pq,name=P[cur].name;
+ if(!add(cur,n))return;
+ toast('✓ '+fa(n)+' پک «'+name+'» به سبد خرید اضافه شد');
+ var b=$('adb');b.textContent='✓ به سبد اضافه شد';
  setTimeout(function(){if($('pd').classList.contains('show'))renderProd()},900);
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeProd()});
@@ -674,16 +686,20 @@ function chg(i,d){
  if(d>0&&cart[i].q>=P[cart[i].id].stock){alert(lowStock()+' موجودی انبار این کالا '+fa(P[cart[i].id].stock)+' پک است.');return}
  cart[i].q+=d;if(cart[i].q<1)cart.splice(i,1);upd();
 }
+ function rmItem(i){
+ cart.splice(i,1);upd();
+ if($('pd').classList.contains('show'))renderProd();
+}
 function total(){return cart.reduce(function(s,c){return s+pp(P[c.id])*c.q},0)}
 function upd(){
  var cnt=cart.reduce(function(s,c){return s+c.q},0),e=$('edn');
- $('n').textContent=fa(cnt);$('n').style.display=cnt?'':'none';
+ $('n').textContent='';$('n').style.display=cnt?'':'none';
  $('tt').textContent=fa(total())+' تومان';
  e.style.display=editMode?'flex':'none';
  e.innerHTML=editMode?'<span>✏️ ویرایش فاکتور '+bdi(curInv)+'</span><button onclick="cancelEdit()">انصراف</button>':'';
  $('items').innerHTML=cart.length?cart.map(function(c,i){var p=P[c.id];
   return '<div class="it"><div class="e" style="background:'+p.bg+'">'+pic(p)+'</div><div class="n">'+esc(p.name)+'<br><small style="color:var(--mut)">پک '+fa(p.pack)+' تایی · '+fa(pp(p))+' تومان</small></div>'+
-  '<div class="q"><button onclick="chg('+i+',1)">+</button>'+fa(c.q)+'<button onclick="chg('+i+',-1)">−</button></div></div>'}).join(''):'<div class="empty">سبد خرید شما خالی است</div>';
+  '<div class="q"><button onclick="chg('+i+',1)">+</button>'+fa(c.q)+'<button onclick="chg('+i+',-1)">−</button><button onclick="rmItem('+i+')" aria-label="حذف از سبد" title="حذف از سبد">🗑</button></div></div>'}).join(''):'<div class="empty">سبد خرید شما خالی است</div>';
 }
 // بخش خریدار و نحوه‌ی تحویل در سبد
 function fillCheckout(){
